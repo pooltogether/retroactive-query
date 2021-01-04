@@ -44,7 +44,7 @@ You can reproduce the results of this query by forking this repository and addin
 1. Find your Project ID in the Google Cloud console [here](https://console.cloud.google.com/)
 1. Fork this repository
 1. Add the secret `GCP_PROJECT_ID` under Settings > Secrets containing your project ID from the GCP dashboard 
-1. Add the secret `GCP_SA_KEY` under Settings > Secrets containing the base64 encoded JSON key of a service account
+1. Add the secret `GCP_SA_KEY` under Settings > Secrets containing the base64 encoded JSON key of a service account. This can be obtained by following [this] (https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts.keys)
 1. Go to the actions tab of your fork
 1. Run the workflow (roughly ~20 minutes to complete)
 1. Inspect the resulting tables
