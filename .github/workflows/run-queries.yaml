@@ -65,7 +65,7 @@ jobs:
           bq --location=US --dataset_id=${{ secrets.GCP_PROJECT_ID }}:retroactive_${{ github.sha }} query \
           --parameter='cutoff_timestamp:TIMESTAMP:2020-09-01 00:00:00+00' \
           --parameter='cutoff_block_number:INT64:10771925' \
-          --parameter='socks_user_reward:FLOAT64:1000' \
+          --parameter='socks_user_reward:FLOAT64:100' \
           --parameter='user_reward:FLOAT64:400' \
           --parameter='total_reward:FLOAT64:150000000' \
           --nouse_legacy_sql
