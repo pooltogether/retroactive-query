@@ -43,7 +43,7 @@ jobs:
           - file: "./src/07_01_liquidity_provider_query_pt_1.sql"
           - file: "./src/07_02_liquidity_provider_query_pt_2.sql"
           - file: "./src/07_03_liquidity_provider_query_pt_3.sql"
-          - file: "./src/08_socks.sql"
+          # - file: "./src/08_socks.sql"
           - file: "./src/09_all_earnings.sql"
           - file: "./src/10_all_earnings_hexadecimal.sql"
           - file: "./src/11_sanity_checks.sql"
