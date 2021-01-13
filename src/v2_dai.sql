@@ -403,8 +403,7 @@ CREATE TEMP TABLE v2_delta_balances AS(
 
 -- simulate cutoff event if these balances are still positive
 -- saved as v2_cutoff
-CREATE TEMP TABLE v2
-_cutoff AS(
+CREATE TEMP TABLE v2_cutoff AS(
   select address,
         0 as value,
         12000000 as block_number,
