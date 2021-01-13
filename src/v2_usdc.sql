@@ -432,6 +432,6 @@ CREATE TABLE v2_usdc AS(
     from `v2_cutoff`
     ORDER BY address, block_number, log_index
   )
-)
+);
 
 END;
