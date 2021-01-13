@@ -327,5 +327,5 @@ CREATE TABLE v1 AS(
 );
 
 
-END:
+END;
 
