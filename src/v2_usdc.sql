@@ -149,7 +149,7 @@ switch (topics[ 0 ]) {
       FROM
         `bigquery-public-data.crypto_ethereum.logs` AS logs
       WHERE
-        address = '0x29fe7d60ddf151e5b52e5fab4f1325da6b2bd958'
+        address = '0x0034ea9808e620a0ef79261c51af20614b742b24'
         AND topics[SAFE_OFFSET(0)] IN (
           '0x7084f5476618d8e60b11ef0d7d3f06914655adb8793e28ff7f018d4c76d505d5'
       )
@@ -168,7 +168,7 @@ CREATE TEMP TABLE v2_1_withdrawn_events AS(
         FROM
           `bigquery-public-data.crypto_ethereum.logs` AS logs
         WHERE
-          address = '0x29fe7d60ddf151e5b52e5fab4f1325da6b2bd958'
+          address = '0x0034ea9808e620a0ef79261c51af20614b742b24'
           AND topics[SAFE_OFFSET(0)] IN (
         '0x7084f5476618d8e60b11ef0d7d3f06914655adb8793e28ff7f018d4c76d505d5',
         '0x2da466a7b24304f47e87fa2e1e5a81b9831ce54fec19055ce277ca2f39ba42c4',
@@ -196,7 +196,7 @@ CREATE TEMP TABLE v2_1_withdrawn_events AS(
         FROM
           `bigquery-public-data.crypto_ethereum.logs` AS logs
         WHERE
-          address = '0x29fe7d60ddf151e5b52e5fab4f1325da6b2bd958'
+          address = '0x0034ea9808e620a0ef79261c51af20614b742b24'
       AND topics[SAFE_OFFSET(0)] IN (
         '0x7084f5476618d8e60b11ef0d7d3f06914655adb8793e28ff7f018d4c76d505d5',
         '0x2da466a7b24304f47e87fa2e1e5a81b9831ce54fec19055ce277ca2f39ba42c4',
@@ -236,7 +236,7 @@ WHERE transaction_hash NOT IN(select transaction_hash from
       FROM
         `bigquery-public-data.crypto_ethereum.logs` AS logs
       WHERE
-        address = '0x29fe7d60ddf151e5b52e5fab4f1325da6b2bd958'
+        address = '0x0034ea9808e620a0ef79261c51af20614b742b24'
         AND topics[SAFE_OFFSET(0)] IN (
       '0x2da466a7b24304f47e87fa2e1e5a81b9831ce54fec19055ce277ca2f39ba42c4',
       '0x377533556d4ebd6be8b81e3573fd7e7bf70feb8737df314e8e7953cbb395f004',
@@ -319,7 +319,7 @@ CREATE TEMP TABLE v2_all_synth_transfer_events AS(
       transaction_hash, block_number, log_index,
       "Transfer" as event_type   
   from `bigquery-public-data.crypto_ethereum.token_transfers` 
-  where token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
+  where token_address = "0xbd87447f48ad729c5c4b8bcb503e1395f62e8b98"
   and  to_address != "0x0000000000000000000000000000000000000000"
   and from_address != "0x0000000000000000000000000000000000000000"
 
@@ -331,7 +331,7 @@ CREATE TEMP TABLE v2_all_synth_transfer_events AS(
       transaction_hash, block_number, log_index,
       "Transfer" as event_type  
   from `bigquery-public-data.crypto_ethereum.token_transfers` 
-  where token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
+  where token_address = "0xbd87447f48ad729c5c4b8bcb503e1395f62e8b98"
   and  to_address != "0x0000000000000000000000000000000000000000"
   and from_address != "0x0000000000000000000000000000000000000000"
 
@@ -423,12 +423,15 @@ CREATE TEMP TABLE v2_cutoff AS(
 );
 
 -- union the cutoff burn event with the rest of the transfers
-select  * from(
-  select * 
-  from `v2_delta_balances` 
-  UNION ALL
-  select *
-  from `v2_cutoff`
-  ORDER BY address, block_number, log_index
-);
+CREATE TABLE v2_usdc AS(
+  select  * from(
+    select * 
+    from `v2_delta_balances` 
+    UNION ALL
+    select *
+    from `v2_cutoff`
+    ORDER BY address, block_number, log_index
+  )
+)
+
 END;
