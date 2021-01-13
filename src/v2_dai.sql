@@ -423,7 +423,7 @@ CREATE TEMP TABLE v2_cutoff AS(
 );
 
 -- union the cutoff burn event with the rest of the transfers
-CREATE TABLE v2_dai AS()
+CREATE TABLE v2_dai AS(
   select  * from(
     select * 
     from `v2_delta_balances` 
