@@ -156,7 +156,7 @@ CREATE TEMP TABLE v1_p1_deltas AS(
     (SELECT
         parsed.address AS address,
         sum(CAST(parsed.value AS NUMERIC)) AS prev_balance,
-        max(block_number) + 36000 as block_number
+        max(block_number) + @v1_pool_period as block_number
     
     FROM
         `v1_p1_events` 
@@ -201,7 +201,7 @@ CREATE TEMP TABLE v1_p2_deltas AS(
     (SELECT
         parsed.address AS address,
         sum(CAST(parsed.value AS NUMERIC)) AS prev_balance,
-        max(block_number) + 36000 as block_number
+        max(block_number) + @v1_pool_period as block_number
     
     FROM
         `v1_p2_events` 
@@ -292,7 +292,7 @@ CREATE TEMP TABLE v1_p4_deltas AS(
     (SELECT
         parsed.address AS address,
         sum(CAST(parsed.value AS NUMERIC)) AS prev_balance,
-        max(block_number) + 36000 as block_number
+        max(block_number) + @v1_pool_period as block_number
     
     FROM
         `v1_p4_events` 
