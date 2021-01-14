@@ -40,6 +40,7 @@ CREATE TEMP TABLE v3_deltas AS (
 -- saved as v3_simulated_balance_burn
 CREATE TEMP TABLE v3_simulated_balance_burn AS(
     select address,
+        0 as value,
         @cutoff_block_number as block_number,
         0 as log_index,     
         0 as balance,
