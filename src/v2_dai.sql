@@ -398,4 +398,3 @@ CREATE TABLE v2_dai AS(
 );
 
 END;
-

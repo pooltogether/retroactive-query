@@ -40,7 +40,6 @@ CREATE TEMP TABLE v3_deltas AS (
 -- saved as v3_simulated_balance_burn
 CREATE TEMP TABLE v3_simulated_balance_burn AS(
     select address,
-        0 - amount as value,
         @cutoff_block_number as block_number,
         0 as log_index,     
         0 as balance,
@@ -49,7 +48,6 @@ CREATE TEMP TABLE v3_simulated_balance_burn AS(
         from(
             select address , 
             sum(value) as prev_balance,
-            value as amount,
             @cutoff_block_number - max(block_number) as delta_blocks
             from  `v3_deltas`
             GROUP BY address
