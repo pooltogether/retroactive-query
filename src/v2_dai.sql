@@ -273,43 +273,6 @@ CREATE TEMP TABLE v2_all_filtered_events AS(
 --3. Treat the Withdrawn, CommittedDepositWithdrawn, OpenDepositWithdrawn, SponsorshipandFeesWithdrawn all as "Burn" transfers
 --So for 2) you'll want to pull in the transfers for the PoolToken where from != 0 and to != 0
 
--- synt Burns , 7078 results
-
--- select 
---       parsed.address as from_address,
---       0 - CAST(parsed.value as NUMERIC) as value,
---       transaction_hash,
---       block_number,
---       log_index,
--- from 
--- (select * from `semiotic-cove-300720.retroactive_09195b91a75f4f29bcbc3aabb0811846a98db648.v2_all_non_deposited_events` 
--- UNION ALL
--- select * from `semiotic-cove-300720.retroactive_09195b91a75f4f29bcbc3aabb0811846a98db648.v2_0_withdrawn_events` 
--- )
--- where parsed.event = "Withdrawn" 
--- OR parsed.event = "CommittedDepositWithdrawn" 
--- OR parsed.event = "OpenDepositWithdrawn"
--- OR parsed.event = "SponsorshipandFeesWithdrawn"
-
--- synt Mints -16428 results
-
--- select 
---       parsed.address as from_address,
---       CAST(parsed.value as NUMERIC) as value,
---       transaction_hash,
---       block_number,
---       log_index,
--- from 
--- (select * from `semiotic-cove-300720.retroactive_09195b91a75f4f29bcbc3aabb0811846a98db648.v2_all_non_deposited_events` 
--- UNION ALL
--- select * from `semiotic-cove-300720.retroactive_09195b91a75f4f29bcbc3aabb0811846a98db648.v2_0_withdrawn_events` 
--- )
--- where parsed.event = "Deposited" 
--- OR parsed.event = "DepositedAndCommited" 
--- OR parsed.event = "Rewarded"
--- OR parsed.event = "SponsorshipDeposited"
-
-
 -- get all "Transfer" events -- 35685 results
 -- saved as v2_all_synth_transfer_events
 CREATE TEMP TABLE v2_all_synth_transfer_events AS(
@@ -327,7 +290,7 @@ CREATE TEMP TABLE v2_all_synth_transfer_events AS(
 
   select
       to_address as address,
-      0 - CAST(value AS NUMERIC) as value,
+      CAST(value AS NUMERIC) as value,
       transaction_hash, block_number, log_index,
       "Transfer" as event_type  
   from `bigquery-public-data.crypto_ethereum.token_transfers` 
