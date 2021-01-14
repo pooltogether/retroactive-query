@@ -133,6 +133,53 @@ switch (topics[ 0 ]) {
     throw 'unexpected event decode';
 }
 """ OPTIONS ( library="https://storage.googleapis.com/ethlab-183014.appspot.com/ethjs-abi.js" );
+
+
+CREATE TEMP FUNCTION
+  PARSE_POD_LOG(data STRING,
+    topics ARRAY<STRING>)
+  RETURNS STRUCT<`address` STRING,
+  `value` STRING,
+  `event` STRING>
+  LANGUAGE js AS """
+switch (topics[ 0 ]) {    
+    case '0x91f63202ac41673c1d492d91ee9bf7a27334ccbcf5bcfbeb5755c67a8d12a838':
+    var parsedEvent = { 'name': 'PendingDepositWithdrawn',
+      'inputs': [
+        { 'type': 'address', 'name': 'operator', 'indexed': true },
+        {'type': 'address', 'name': 'from','indexed': true },
+        {'type': 'uint256', 'name': 'collateral','indexed': false },
+        {'type': 'bytes', 'name': 'data','indexed': false },
+        {'type': 'bytes', 'name': 'operatorData','indexed': false }
+       
+       ],
+      'anonymous': false,
+      'type': 'event'
+    };
+    decoded = abi.decodeEvent(parsedEvent, data, topics, false);
+    return { address: decoded.from, value: decoded.collateral, event: 'PendingDepositWithdrawn'};
+
+    case '0x91f63202ac41673c1d492d91ee9bf7a27334ccbcf5bcfbeb5755c67a8d12a838':
+    var parsedEvent = { 'name': 'Deposited',
+      'inputs': [
+        { 'type': 'address', 'name': 'operator', 'indexed': true },
+        {'type': 'address', 'name': 'from','indexed': true },
+        {'type': 'uint256', 'name': 'collateral','indexed': false },
+        {'type': 'uint256', 'name': 'drawId','indexed': false },
+        {'type': 'bytes', 'name': 'data','indexed': false },
+        {'type': 'bytes', 'name': 'operatorData','indexed': false }
+       
+       ],
+      'anonymous': false,
+      'type': 'event'
+    };
+    decoded = abi.decodeEvent(parsedEvent, data, topics, false);
+    return { address: decoded.from, value: decoded.collateral, event: 'Deposited'};
+
+  default:
+    throw 'unexpected event decode';
+}
+""" OPTIONS ( library="https://storage.googleapis.com/ethlab-183014.appspot.com/ethjs-abi.js" );
  
  
  
@@ -332,7 +379,7 @@ CREATE TEMP TABLE v2_all_synth_transfer_events AS(
   select * from `v2_0_withdrawn_events` 
   )
   where parsed.event = "Deposited" 
-  OR parsed.event = "DepositedAndCommited" 
+  OR parsed.event = "DepositedAndCommitted" 
   OR parsed.event = "Rewarded"
   OR parsed.event = "SponsorshipDeposited"
 
@@ -340,8 +387,8 @@ CREATE TEMP TABLE v2_all_synth_transfer_events AS(
   ORDER BY address, block_number, log_index ASC
 );
 
--- now calculate rolling balances
--- saved as v2_delta_balances
+-- now calculate rolling balances, saved as v2_delta_balances
+-- 
 CREATE TEMP TABLE v2_delta_balances AS(
   SELECT * , coalesce(LAG(balance,1) OVER
   (PARTITION BY address ORDER BY block_number, log_index),0) as prev_balance,
