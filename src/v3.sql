@@ -57,7 +57,7 @@ CREATE TEMP TABLE v3_simulated_balance_burn AS(
     ORDER BY address
 );
 
--- union the above two tables
+-- union the above two tables 
 CREATE TABLE v3 AS(
     select  * from(
     select * 
