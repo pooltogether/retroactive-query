@@ -58,7 +58,7 @@ CREATE TEMP TABLE v3_simulated_balance_burn AS(
 );
 
 -- union the above two tables 
-CREATE TABLE v3 AS(
+CREATE TABLE v3_dai AS(
     select  * from(
     select * 
     from `v3_simulated_balance_burn` 

@@ -333,7 +333,7 @@ CREATE TEMP TABLE v2_all_synth_transfer_events AS(
   select * from `v2_0_withdrawn_events` 
   )
   where parsed.event = "Deposited" 
-  OR parsed.event = "DepositedAndCommited" 
+  OR parsed.event = "DepositedAndCommitted" 
   OR parsed.event = "Rewarded"
   OR parsed.event = "SponsorshipDeposited"
 
