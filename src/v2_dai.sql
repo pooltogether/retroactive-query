@@ -416,7 +416,7 @@ CREATE TEMP TABLE v2_delta_balances AS(
 CREATE TEMP TABLE v2_cutoff AS(
   select address,
         0 as value,
-        @cutoff_block_number as block_number,
+        @v2_cutoff_block_number as block_number,
         0 as log_index,     
         0 as balance,
         prev_balance,
@@ -424,7 +424,7 @@ CREATE TEMP TABLE v2_cutoff AS(
         from(
           select address , 
           sum(value) as prev_balance,
-          @cutoff_block_number - max(block_number) as delta_blocks
+          @v2_cutoff_block_number - max(block_number) as delta_blocks
           from  `v2_delta_balances`
           GROUP BY address
   )
