@@ -48,7 +48,7 @@ CREATE TEMP FUNCTION
 
         -- get token transfers from public dataset
       create temp table pod_transfers as(
-        select * 
+        SELECT * 
         FROM(
             SELECT from_address as address,
             0 - CAST(value AS NUMERIC) as value, 
@@ -68,14 +68,14 @@ CREATE TEMP FUNCTION
       
       -- find corresponding exchange rate (calculated from collateral and mantissa)
      create temp table pod_normalised_transfers AS (
-     select 
+     SELECT 
       address,
       CAST(value AS numeric)/CAST(mantissa AS numeric) as value,
       transaction_hash,
       block_number,
       log_index
       from( 
-        select *,      
+        SELECT *,      
         CASE
             WHEN block_number < 10252642 THEN "997793854132195951469771" 
             WHEN block_number BETWEEN 10252642 AND 10478731 THEN "995588483418636972538758"
@@ -114,17 +114,17 @@ CREATE TEMP FUNCTION
 );
 
 CREATE TEMP TABLE pod_cutoff AS(
-  select address,
+  SELECT address,
         0 as value,
-        11104391 as block_number,
+        @v2_cutoff_block_number as block_number,
         0 as log_index,     
         0 as balance,
         prev_balance,
         delta_blocks
         from(
-          select address , 
+          SELECT address , 
           sum(value) as prev_balance,
-          11104391 - max(block_number) as delta_blocks
+          @v2_cutoff_block_number - max(block_number) as delta_blocks
           from  `v2_pod_delta_balances`
           GROUP BY address
   )
@@ -132,11 +132,11 @@ CREATE TEMP TABLE pod_cutoff AS(
   ORDER BY address
 );
 
-select  * from(
-    select * 
+SELECT  * from(
+    SELECT * 
     from `v2_pod_delta_balances` 
     UNION ALL
-    select *
+    SELECT *
     from `pod_cutoff`
     ORDER BY address, block_number, log_index
   );

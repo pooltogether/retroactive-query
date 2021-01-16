@@ -157,7 +157,7 @@ switch (topics[ 0 ]) {
 
 -- all v2.1 Withdrawn events -284 results -- saved as v2_1_withdrawn_events
 CREATE TEMP TABLE v2_1_withdrawn_events AS(
-  SELECT * from( 
+  SELECT * FROM( 
     SELECT
           logs.block_timestamp AS block_timestamp,
           logs.block_number AS block_number,
@@ -217,9 +217,9 @@ CREATE TEMP TABLE v2_1_withdrawn_events AS(
 
 --v2.0 Withdrawn events -2418 results --saved as v2_0_withdrawn_events
 CREATE TEMP TABLE v2_0_withdrawn_events AS(
-select * from
+SELECT * FROM
 `v2_all_withdrawn_events`  
-WHERE transaction_hash NOT IN(select transaction_hash from 
+WHERE transaction_hash NOT IN(SELECT transaction_hash FROM 
 `v2_1_withdrawn_events` )
 );  
 
@@ -269,49 +269,49 @@ CREATE TEMP TABLE v2_all_filtered_events AS(
 
 -- now transforming events to transfers
 --1. Deposited, DepositedAndCommited, Rewarded, SponsorshipDeposited are all "Mint" Transfers
---2. Use the Non-mint and non-burn Transfers from the token as-is
+--2. Use the Non-mint and non-burn Transfers FROM the token as-is
 --3. Treat the Withdrawn, CommittedDepositWithdrawn, OpenDepositWithdrawn, SponsorshipandFeesWithdrawn all as "Burn" transfers
---So for 2) you'll want to pull in the transfers for the PoolToken where from != 0 and to != 0
+--So for 2) you'll want to pull in the transfers for the PoolToken where FROM != 0 and to != 0
 
 
 -- get all "Transfer" events -- 35685 results
 -- saved as v2_all_synth_transfer_events
 CREATE TEMP TABLE v2_all_synth_transfer_events AS(
-  select
-      from_address as address,
+  SELECT
+      FROM_address as address,
       0 - CAST(value AS NUMERIC) as value,
       transaction_hash, block_number, log_index,
       "Transfer" as event_type   
-  from `bigquery-public-data.crypto_ethereum.token_transfers` 
+  FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
   where token_address = "0xfe6892654cbb05eb73d28dcc1ff938f59666fe9f"
   and  to_address != "0x0000000000000000000000000000000000000000"
-  and from_address != "0x0000000000000000000000000000000000000000"
+  and FROM_address != "0x0000000000000000000000000000000000000000"
 
   UNION ALL
 
-  select
+  SELECT
       to_address as address,
       CAST(value AS NUMERIC) as value,
       transaction_hash, block_number, log_index,
       "Transfer" as event_type  
-  from `bigquery-public-data.crypto_ethereum.token_transfers` 
+  FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
   where token_address = "0xfe6892654cbb05eb73d28dcc1ff938f59666fe9f"
   and  to_address != "0x0000000000000000000000000000000000000000"
-  and from_address != "0x0000000000000000000000000000000000000000"
+  and FROM_address != "0x0000000000000000000000000000000000000000"
 
   UNION ALL
 
-  select -- as per synth Burn 
+  SELECT -- as per synth Burn 
         parsed.address as address,
         0 - CAST(parsed.value as NUMERIC) as value,
         transaction_hash,
         block_number,
         log_index,
         "Burn" as event_type
-  from 
-  (select * from `v2_all_non_deposited_events` 
+  FROM 
+  (SELECT * FROM `v2_all_non_deposited_events` 
   UNION ALL
-  select * from `v2_0_withdrawn_events` 
+  SELECT * FROM `v2_0_withdrawn_events` 
   )
   where parsed.event = "Withdrawn" 
   OR parsed.event = "CommittedDepositWithdrawn" 
@@ -320,17 +320,17 @@ CREATE TEMP TABLE v2_all_synth_transfer_events AS(
 
   UNION ALL
 
-  select -- as per synth Mint
+  SELECT -- as per synth Mint
         parsed.address as address,
         CAST(parsed.value as NUMERIC) as value,
         transaction_hash,
         block_number,
         log_index,
         "Mint" as event_type
-  from 
-  (select * from `v2_all_non_deposited_events` 
+  FROM 
+  (SELECT * FROM `v2_all_non_deposited_events` 
   UNION ALL
-  select * from `v2_0_withdrawn_events` 
+  SELECT * FROM `v2_0_withdrawn_events` 
   )
   where parsed.event = "Deposited" 
   OR parsed.event = "DepositedAndCommitted" 
@@ -368,18 +368,18 @@ CREATE TEMP TABLE v2_delta_balances AS(
 -- simulate cutoff event if these balances are still positive
 -- saved as v2_cutoff
 CREATE TEMP TABLE v2_cutoff AS(
-  select address,
+  SELECT address,
         0 as value,
         @v2_cutoff_block_number as block_number,
         0 as log_index,     
         0 as balance,
         prev_balance,
         delta_blocks
-        from(
-          select address , 
+        FROM(
+          SELECT address , 
           sum(value) as prev_balance,
           @v2_cutoff_block_number - max(block_number) as delta_blocks
-          from  `v2_delta_balances`
+          FROM  `v2_delta_balances`
           GROUP BY address
   )
   WHERE prev_balance > 0
@@ -388,12 +388,12 @@ CREATE TEMP TABLE v2_cutoff AS(
 
 -- union the cutoff burn event with the rest of the transfers
 CREATE TABLE v2_sai AS(
-  select  * from(
-    select * 
-    from `v2_delta_balances` 
+  SELECT  * FROM(
+    SELECT * 
+    FROM `v2_delta_balances` 
     UNION ALL
-    select *
-    from `v2_cutoff`
+    SELECT *
+    FROM `v2_cutoff`
     ORDER BY address, block_number, log_index
   )
 );

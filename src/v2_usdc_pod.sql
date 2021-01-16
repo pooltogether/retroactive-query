@@ -63,7 +63,7 @@ CREATE TEMP FUNCTION
             where token_address = "0x6f5587e191c8b222f634c78111f97c4851663ba4" 
         )
         WHERE address != "0x0000000000000000000000000000000000000000"
-        AND block_number < 11104391 -- v2cutoff    
+        AND block_number < @v2_cutoff_block_number 
       );
       
       -- find corresponding exchange rate (calculated from collateral and mantissa)
@@ -119,7 +119,7 @@ CREATE TEMP FUNCTION
 CREATE TEMP TABLE pod_cutoff AS(
   select address,
         0 as value,
-        11104391 as block_number,
+        @v2_cutoff_block_number as block_number,
         0 as log_index,     
         0 as balance,
         prev_balance,
@@ -127,7 +127,7 @@ CREATE TEMP TABLE pod_cutoff AS(
         from(
           select address , 
           sum(value) as prev_balance,
-          11104391 - max(block_number) as delta_blocks
+          @v2_cutoff_block_number - max(block_number) as delta_blocks
           from  `v2_pod_delta_balances`
           GROUP BY address
   )

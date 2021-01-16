@@ -314,14 +314,14 @@ CREATE TEMP TABLE v1_p4_deltas AS(
 );
 
 CREATE TABLE v1 AS(
-  select * from(
-      select * from `v1_p1_deltas`
+  SELECT * from(
+      SELECT * from `v1_p1_deltas`
       UNION ALL
-      select * from `v1_p2_deltas`
+      SELECT * from `v1_p2_deltas`
       UNION ALL
-      select * from `v1_p3_deltas`
+      SELECT * from `v1_p3_deltas`
       UNION ALL
-      select * from `v1_p4_deltas`
+      SELECT * from `v1_p4_deltas`
   )
   ORDER BY address, block_number, log_index ASC
 );

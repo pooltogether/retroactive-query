@@ -84,9 +84,9 @@ switch (topics[ 0 ]) {
     decoded = abi.decodeEvent(parsedEvent, data, topics, false);
     return { address: decoded.sender, value: decoded.amount, event: 'SponsorshipDeposited'};
 
-    //SponsorshipAndFeesWithdrawn 0x6a4d2bc0b4e5453e814890ffd34fde45f1820118a5e3e08c8273e6befd8cc050
+    //SponsorshipANDFeesWithdrawn 0x6a4d2bc0b4e5453e814890ffd34fde45f1820118a5e3e08c8273e6befd8cc050
     case '0x6a4d2bc0b4e5453e814890ffd34fde45f1820118a5e3e08c8273e6befd8cc050':
-    var parsedEvent = { 'name': 'SponsorshipAndFeesWithdrawn',
+    var parsedEvent = { 'name': 'SponsorshipANDFeesWithdrawn',
       'inputs': [{ 'type': 'address', 'name': 'sender', 'indexed': true }, {
         'type': 'uint256',
         'name': 'amount',
@@ -96,11 +96,11 @@ switch (topics[ 0 ]) {
       'type': 'event'
     };
     decoded = abi.decodeEvent(parsedEvent, data, topics, false);
-    return { address: decoded.sender, value: decoded.amount, event: 'SponsorshipAndFeesWithdrawn'};
+    return { address: decoded.sender, value: decoded.amount, event: 'SponsorshipANDFeesWithdrawn'};
 
-    //DepositedAndCommitted 0xc3a2b1de03156df25decfda8ed3e5aaa02ad33dc5fdf3f13aa9e7f6a7a8ae100
+    //DepositedANDCommitted 0xc3a2b1de03156df25decfda8ed3e5aaa02ad33dc5fdf3f13aa9e7f6a7a8ae100
     case '0xc3a2b1de03156df25decfda8ed3e5aaa02ad33dc5fdf3f13aa9e7f6a7a8ae100':
-    var parsedEvent = { 'name': 'DepositedAndCommitted',
+    var parsedEvent = { 'name': 'DepositedANDCommitted',
       'inputs': [{ 'type': 'address', 'name': 'sender', 'indexed': true }, {
         'type': 'uint256',
         'name': 'amount',
@@ -110,7 +110,7 @@ switch (topics[ 0 ]) {
       'type': 'event'
     };
     decoded = abi.decodeEvent(parsedEvent, data, topics, false);
-    return { address: decoded.sender, value: decoded.amount, event: 'DepositedAndCommitted'};
+    return { address: decoded.sender, value: decoded.amount, event: 'DepositedANDCommitted'};
 
     
     case '0x39d270b67baa0bff7a394d3427e52a85d706cae15e649754ec7b54f3c9deb3f0':
@@ -147,7 +147,7 @@ switch (topics[ 0 ]) {
     var parsedEvent = { 'name': 'PendingDepositWithdrawn',
       'inputs': [
         { 'type': 'address', 'name': 'operator', 'indexed': true },
-        {'type': 'address', 'name': 'from','indexed': true },
+        {'type': 'address', 'name': 'FROM','indexed': true },
         {'type': 'uint256', 'name': 'collateral','indexed': false },
         {'type': 'bytes', 'name': 'data','indexed': false },
         {'type': 'bytes', 'name': 'operatorData','indexed': false }
@@ -157,13 +157,13 @@ switch (topics[ 0 ]) {
       'type': 'event'
     };
     decoded = abi.decodeEvent(parsedEvent, data, topics, false);
-    return { address: decoded.from, value: decoded.collateral, event: 'PendingDepositWithdrawn'};
+    return { address: decoded.FROM, value: decoded.collateral, event: 'PendingDepositWithdrawn'};
 
     case '0x91f63202ac41673c1d492d91ee9bf7a27334ccbcf5bcfbeb5755c67a8d12a838':
     var parsedEvent = { 'name': 'Deposited',
       'inputs': [
         { 'type': 'address', 'name': 'operator', 'indexed': true },
-        {'type': 'address', 'name': 'from','indexed': true },
+        {'type': 'address', 'name': 'FROM','indexed': true },
         {'type': 'uint256', 'name': 'collateral','indexed': false },
         {'type': 'uint256', 'name': 'drawId','indexed': false },
         {'type': 'bytes', 'name': 'data','indexed': false },
@@ -174,7 +174,7 @@ switch (topics[ 0 ]) {
       'type': 'event'
     };
     decoded = abi.decodeEvent(parsedEvent, data, topics, false);
-    return { address: decoded.from, value: decoded.collateral, event: 'Deposited'};
+    return { address: decoded.FROM, value: decoded.collateral, event: 'Deposited'};
 
   default:
     throw 'unexpected event decode';
@@ -204,7 +204,7 @@ switch (topics[ 0 ]) {
 
 -- all v2.1 Withdrawn events -284 results -- saved as v2_1_withdrawn_events
 CREATE TEMP TABLE v2_1_withdrawn_events AS(
-  SELECT * from( 
+  SELECT * FROM( 
     SELECT
           logs.block_timestamp AS block_timestamp,
           logs.block_number AS block_number,
@@ -264,9 +264,9 @@ CREATE TEMP TABLE v2_1_withdrawn_events AS(
 
 --v2.0 Withdrawn events -2418 results --saved as v2_0_withdrawn_events
 CREATE TEMP TABLE v2_0_withdrawn_events AS(
-select * from
+SELECT * FROM
 `v2_all_withdrawn_events`  
-WHERE transaction_hash NOT IN(select transaction_hash from 
+WHERE transaction_hash NOT IN(SELECT transaction_hash FROM 
 `v2_1_withdrawn_events` )
 );  
 
@@ -315,76 +315,78 @@ CREATE TEMP TABLE v2_all_filtered_events AS(
 
 
 -- now transforming events to transfers
---1. Deposited, DepositedAndCommited, Rewarded, SponsorshipDeposited are all "Mint" Transfers
---2. Use the Non-mint and non-burn Transfers from the token as-is
---3. Treat the Withdrawn, CommittedDepositWithdrawn, OpenDepositWithdrawn, SponsorshipandFeesWithdrawn all as "Burn" transfers
---So for 2) you'll want to pull in the transfers for the PoolToken where from != 0 and to != 0
+--1. Deposited, DepositedANDCommited, Rewarded, SponsorshipDeposited are all "Mint" Transfers
+--2. Use the Non-mint AND non-burn Transfers FROM the token as-is
+--3. Treat the Withdrawn, CommittedDepositWithdrawn, OpenDepositWithdrawn, SponsorshipANDFeesWithdrawn all as "Burn" transfers
+--So for 2) you'll want to pull in the transfers for the PoolToken WHERE FROM != 0 AND to != 0
 
 -- get all "Transfer" events -- 35685 results
 -- saved as v2_all_synth_transfer_events
 CREATE TEMP TABLE v2_all_synth_transfer_events AS(
-  select
-      from_address as address,
+SELECT * FROM(
+  SELECT
+      FROM_address as address,
       0 - CAST(value AS NUMERIC) as value,
       transaction_hash, block_number, log_index,
       "Transfer" as event_type   
-  from `bigquery-public-data.crypto_ethereum.token_transfers` 
-  where token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
-  and  to_address != "0x0000000000000000000000000000000000000000"
-  and from_address != "0x0000000000000000000000000000000000000000"
+  FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
+  WHERE token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
+  AND  to_address != "0x0000000000000000000000000000000000000000"
+  AND FROM_address != "0x0000000000000000000000000000000000000000"
+
 
   UNION ALL
 
-  select
+  SELECT
       to_address as address,
       CAST(value AS NUMERIC) as value,
       transaction_hash, block_number, log_index,
       "Transfer" as event_type  
-  from `bigquery-public-data.crypto_ethereum.token_transfers` 
-  where token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
-  and  to_address != "0x0000000000000000000000000000000000000000"
-  and from_address != "0x0000000000000000000000000000000000000000"
+  FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
+  WHERE token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
+  AND  to_address != "0x0000000000000000000000000000000000000000"
+  AND FROM_address != "0x0000000000000000000000000000000000000000"
 
   UNION ALL
 
-  select -- as per synth Burn 
+  SELECT -- as per synth Burn 
         parsed.address as address,
         0 - CAST(parsed.value as NUMERIC) as value,
         transaction_hash,
         block_number,
         log_index,
         "Burn" as event_type
-  from 
-  (select * from `v2_all_non_deposited_events` 
+  FROM 
+  (SELECT * FROM `v2_all_non_deposited_events` 
   UNION ALL
-  select * from `v2_0_withdrawn_events` 
+  SELECT * FROM `v2_0_withdrawn_events` 
   )
-  where parsed.event = "Withdrawn" 
+  WHERE parsed.event = "Withdrawn" 
   OR parsed.event = "CommittedDepositWithdrawn" 
   OR parsed.event = "OpenDepositWithdrawn"
-  OR parsed.event = "SponsorshipandFeesWithdrawn"
+  OR parsed.event = "SponsorshipANDFeesWithdrawn"
 
   UNION ALL
 
-  select -- as per synth Mint
+  SELECT -- as per synth Mint
         parsed.address as address,
         CAST(parsed.value as NUMERIC) as value,
         transaction_hash,
         block_number,
         log_index,
         "Mint" as event_type
-  from 
-  (select * from `v2_all_non_deposited_events` 
+  FROM 
+  (SELECT * FROM `v2_all_non_deposited_events` 
   UNION ALL
-  select * from `v2_0_withdrawn_events` 
+  SELECT * FROM `v2_0_withdrawn_events` 
   )
-  where parsed.event = "Deposited" 
-  OR parsed.event = "DepositedAndCommitted" 
+  WHERE parsed.event = "Deposited" 
+  OR parsed.event = "DepositedANDCommitted" 
   OR parsed.event = "Rewarded"
   OR parsed.event = "SponsorshipDeposited"
-
-
-  ORDER BY address, block_number, log_index ASC
+)
+WHERE value != 0 -- get rid of zero value transactions
+ORDER BY address, block_number, log_index ASC
 );
 
 -- now calculate rolling balances, saved as v2_delta_balances
@@ -414,18 +416,18 @@ CREATE TEMP TABLE v2_delta_balances AS(
 -- simulate cutoff event if these balances are still positive
 -- saved as v2_cutoff
 CREATE TEMP TABLE v2_cutoff AS(
-  select address,
+  SELECT address,
         0 as value,
         @v2_cutoff_block_number as block_number,
         0 as log_index,     
         0 as balance,
         prev_balance,
         delta_blocks
-        from(
-          select address , 
+        FROM(
+          SELECT address , 
           sum(value) as prev_balance,
           @v2_cutoff_block_number - max(block_number) as delta_blocks
-          from  `v2_delta_balances`
+          FROM  `v2_delta_balances`
           GROUP BY address
   )
   WHERE prev_balance > 0
@@ -434,12 +436,12 @@ CREATE TEMP TABLE v2_cutoff AS(
 
 -- union the cutoff burn event with the rest of the transfers
 CREATE TABLE v2_dai AS(
-  select  * from(
-    select * 
-    from `v2_delta_balances` 
+  SELECT  * FROM(
+    SELECT * 
+    FROM `v2_delta_balances` 
     UNION ALL
-    select *
-    from `v2_cutoff`
+    SELECT *
+    FROM `v2_cutoff`
     ORDER BY address, block_number, log_index
   )
 );

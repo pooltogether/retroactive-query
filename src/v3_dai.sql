@@ -1,5 +1,5 @@
 
--- calcualted balance and prev_balance from public dataset and saves as v3_deltas_1
+-- calcualted balance and prev_balance FROM public dataset and saves as v3_deltas_1
 BEGIN
 CREATE TEMP TABLE v3_deltas AS (
     SELECT * , coalesce(LAG(balance,1) OVER
@@ -18,7 +18,7 @@ CREATE TEMP TABLE v3_deltas AS (
             as balance
 
     FROM(
-        SELECT from_address as address,
+        SELECT FROM_address as address,
         0 - CAST(value AS NUMERIC) as value, 
         transaction_hash, block_number, log_index 
         FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
@@ -39,18 +39,18 @@ CREATE TEMP TABLE v3_deltas AS (
 --simulate total balance burn event for hard coded block if non-zero balance at this point, 3627 results
 -- saved as v3_simulated_balance_burn
 CREATE TEMP TABLE v3_simulated_balance_burn AS(
-    select address,
+    SELECT address,
         0 as value,
         @v3_cutoff_block_number as block_number,
         0 as log_index,     
         0 as balance,
         prev_balance,
         delta_blocks
-        from(
-            select address , 
+        FROM(
+            SELECT address , 
             sum(value) as prev_balance,
             @v3_cutoff_block_number - max(block_number) as delta_blocks
-            from  `v3_deltas`
+            FROM  `v3_deltas`
             GROUP BY address
     )
     WHERE prev_balance > 0
@@ -59,12 +59,12 @@ CREATE TEMP TABLE v3_simulated_balance_burn AS(
 
 -- union the above two tables 
 CREATE TABLE v3_dai AS(
-    select  * from(
-    select * 
-    from `v3_simulated_balance_burn` 
+    SELECT  * FROM(
+    SELECT * 
+    FROM `v3_simulated_balance_burn` 
     UNION ALL
-    select *
-    from `v3_deltas`
+    SELECT *
+    FROM `v3_deltas`
     ORDER BY address, block_number, log_index
     )
 );
