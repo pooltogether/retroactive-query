@@ -40,7 +40,17 @@ CREATE TABLE lp_fraction_of_total AS(
     ORDER BY address, source
 );
 
+-- formula query
 
+SELECT address,
+        10 * log10(1 + prev_balance * 0.0002) * (2/1+ exp(-10 * delta_blocks)) as POOL, -- formula
+        source
+FROM(        
+    SELECT * FROM `all_versions_final_deltas`
+    WHERE (prev_balance > 0
+    AND delta_blocks > 0)
+)
+order by address, source, block_number, log_index
 
 
 
