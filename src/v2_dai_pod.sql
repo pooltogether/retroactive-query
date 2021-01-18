@@ -139,7 +139,7 @@ CREATE TABLE v2_dai_pods AS (
       SELECT *
       FROM `pod_cutoff`
       ORDER BY address, block_number, log_index
-    );
+    )
 );
 
       

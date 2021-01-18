@@ -143,7 +143,7 @@ CREATE TABLE v2_usdc_pods AS(
       SELECT *
       FROM `pod_cutoff`
       ORDER BY address, block_number, log_index
-    );
+    )
 );
 
       
