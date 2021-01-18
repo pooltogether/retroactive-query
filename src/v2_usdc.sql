@@ -389,7 +389,15 @@ CREATE TEMP TABLE v2_cutoff AS(
 
 -- union the cutoff burn event with the rest of the transfers
 CREATE TABLE v2_usdc AS(
-  SELECT  * FROM(
+  SELECT  
+    address,
+    value * 1e12 as value, -- scaling to be equal to dai/sai
+    block_number,
+    log_index,
+    balance,
+    prev_balance,
+    delta_blocks
+  FROM(
     SELECT * 
     FROM `v2_delta_balances` 
     UNION ALL

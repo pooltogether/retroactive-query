@@ -90,7 +90,8 @@ CREATE TABLE all_versions_final_deltas AS(
     "0xc7cbb97f76046ec031202f2da19f9b16b7f18d4a",
     "0x7a3d9330ca9b0d0a1e9d0cc223ce786ce7fa4813",
     "0xaa1fdb5d1fd7d28d216fdfeb3475ccac538c61fa",
-    "0x5881541e79f5d9d5d72c87e8ea6f681cab289b12"
+    "0x5881541e79f5d9d5d72c87e8ea6f681cab289b12",
+    "0xa145f5436741d9675f84a357249c4b90fae4b77e"
     )
 );
 

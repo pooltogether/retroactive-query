@@ -59,13 +59,21 @@ CREATE TEMP TABLE v3_simulated_balance_burn AS(
 
 -- union the above two tables 
 CREATE TABLE v3_usdc AS(
-    SELECT  * FROM(
-    SELECT * 
-    FROM `v3_simulated_balance_burn` 
-    UNION ALL
-    SELECT *
-    FROM `v3_deltas`
-    ORDER BY address, block_number, log_index
+    SELECT    
+    address,
+    value * 1e12 as value, -- scaling to be equal to dai/sai
+    block_number,
+    log_index,
+    balance,
+    prev_balance,
+    delta_blocks 
+    FROM(
+        SELECT * 
+        FROM `v3_simulated_balance_burn` 
+        UNION ALL
+        SELECT *
+        FROM `v3_deltas`
+        ORDER BY address, block_number, log_index
     )
 );
 
