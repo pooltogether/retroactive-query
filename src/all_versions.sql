@@ -6,27 +6,35 @@ CREATE TABLE all_versions_final_deltas AS(
      from `v1`
     UNION ALL
     SELECT *,
-        "V2_Dai" as source
+        "V2_DAI" as source
          from `v2_dai`
     UNION ALL
     SELECT *,
-        "V2_Sai" as source
+        "V2_SAI" as source
          from `v2_sai`
     UNION ALL
     SELECT *,
         "V2_USDC" as source
          from `v2_usdc`
-    UNION ALL 
+    UNION ALL
     SELECT *,
-        "V3_Uni" as source
+    "V2_USDC_POD" as source
+        from `v2_usdc_pods`
+    UNION ALL
+    SELECT *,
+    "V2_DAI_POD" as source
+        from `v2_dai_pods`
+    UNION ALL    
+    SELECT *,
+        "V3_UNI" as source
          from `v3_uni`
              UNION ALL 
     SELECT *,
-        "V3_Dai" as source
+        "V3_DAI" as source
          from `v3_dai`
              UNION ALL 
     SELECT *,
-        "V3_usdc" as source
+        "V3_USDC" as source
          from `v3_usdc`
 );
 

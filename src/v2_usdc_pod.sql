@@ -46,11 +46,11 @@ CREATE TEMP FUNCTION
     --   ORDER by parsed.timestamp;
 
 
-        -- get token transfers from public dataset
+        -- get token transfers FROM public dataset
       create temp table pod_transfers as(
-        select * 
+        SELECT * 
         FROM(
-            SELECT from_address as address,
+            SELECT FROM_address as address,
             0 - CAST(value AS NUMERIC) as value, 
             transaction_hash, block_number, log_index 
             FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
@@ -66,16 +66,16 @@ CREATE TEMP FUNCTION
         AND block_number < @v2_cutoff_block_number 
       );
       
-      -- find corresponding exchange rate (calculated from collateral and mantissa)
+      -- find corresponding exchange rate (calculated FROM collateral and mantissa)
      create temp table pod_normalised_transfers AS (
-     select 
+     SELECT 
       address,
       CAST(value AS numeric) * 1e12 / CAST(mantissa AS numeric) as value, -- normalizing to 18 decimals
       transaction_hash,
       block_number,
       log_index
-      from( 
-        select *,      
+      FROM( 
+        SELECT *,      
         CASE
             WHEN block_number < 10027387 THEN "999321063644775776713679" 
             WHEN block_number BETWEEN 10027387 AND 10040222 THEN "998982525245810425296122"
@@ -89,7 +89,7 @@ CREATE TEMP FUNCTION
             WHEN block_number BETWEEN 10465862 AND 10907589 THEN "990119942045004674110412"
             WHEN block_number > 10907589 THEN "989437793194672047865689"
         END AS mantissa
-      from
+      FROM
       `pod_transfers` 
       )
      );
@@ -117,33 +117,34 @@ CREATE TEMP FUNCTION
 );
 
 CREATE TEMP TABLE pod_cutoff AS(
-  select address,
+  SELECT address,
         0 as value,
         @v2_cutoff_block_number as block_number,
         0 as log_index,     
         0 as balance,
         prev_balance,
         delta_blocks
-        from(
-          select address , 
+        FROM(
+          SELECT address , 
           sum(value) as prev_balance,
           @v2_cutoff_block_number - max(block_number) as delta_blocks
-          from  `v2_pod_delta_balances`
+          FROM  `v2_pod_delta_balances`
           GROUP BY address
   )
   WHERE prev_balance > 0
   ORDER BY address
 );
 
-select  * from(
-    select * 
-    from `v2_pod_delta_balances` 
-    UNION ALL
-    select *
-    from `pod_cutoff`
-    ORDER BY address, block_number, log_index
-  );
-
+CREATE TABLE v2_usdc_pods AS(
+  SELECT  * FROM(
+      SELECT * 
+      FROM `v2_pod_delta_balances` 
+      UNION ALL
+      SELECT *
+      FROM `pod_cutoff`
+      ORDER BY address, block_number, log_index
+    );
+);
 
       
       

@@ -324,67 +324,67 @@ CREATE TEMP TABLE v2_all_filtered_events AS(
 -- saved as v2_all_synth_transfer_events
 CREATE TEMP TABLE v2_all_synth_transfer_events AS(
 SELECT * FROM(
-  SELECT
-      FROM_address as address,
-      0 - CAST(value AS NUMERIC) as value,
-      transaction_hash, block_number, log_index,
-      "Transfer" as event_type   
-  FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
-  WHERE token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
-  AND  to_address != "0x0000000000000000000000000000000000000000"
-  AND FROM_address != "0x0000000000000000000000000000000000000000"
+    SELECT
+        FROM_address as address,
+        0 - CAST(value AS NUMERIC) as value,
+        transaction_hash, block_number, log_index,
+        "Transfer" as event_type   
+    FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
+    WHERE token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
+    AND  to_address != "0x0000000000000000000000000000000000000000"
+    AND FROM_address != "0x0000000000000000000000000000000000000000"
 
 
-  UNION ALL
+    UNION ALL
 
-  SELECT
-      to_address as address,
-      CAST(value AS NUMERIC) as value,
-      transaction_hash, block_number, log_index,
-      "Transfer" as event_type  
-  FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
-  WHERE token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
-  AND  to_address != "0x0000000000000000000000000000000000000000"
-  AND FROM_address != "0x0000000000000000000000000000000000000000"
+    SELECT
+        to_address as address,
+        CAST(value AS NUMERIC) as value,
+        transaction_hash, block_number, log_index,
+        "Transfer" as event_type  
+    FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
+    WHERE token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
+    AND  to_address != "0x0000000000000000000000000000000000000000"
+    AND FROM_address != "0x0000000000000000000000000000000000000000"
 
-  UNION ALL
+    UNION ALL
 
-  SELECT -- as per synth Burn 
-        parsed.address as address,
-        0 - CAST(parsed.value as NUMERIC) as value,
-        transaction_hash,
-        block_number,
-        log_index,
-        "Burn" as event_type
-  FROM 
-  (SELECT * FROM `v2_all_non_deposited_events` 
-  UNION ALL
-  SELECT * FROM `v2_0_withdrawn_events` 
+    SELECT -- as per synth Burn 
+          parsed.address as address,
+          0 - CAST(parsed.value as NUMERIC) as value,
+          transaction_hash,
+          block_number,
+          log_index,
+          "Burn" as event_type
+    FROM 
+    (SELECT * FROM `v2_all_non_deposited_events` 
+    UNION ALL
+    SELECT * FROM `v2_0_withdrawn_events` 
+    )
+    WHERE parsed.event = "Withdrawn" 
+    OR parsed.event = "CommittedDepositWithdrawn" 
+    OR parsed.event = "OpenDepositWithdrawn"
+    OR parsed.event = "SponsorshipANDFeesWithdrawn"
+
+    UNION ALL
+
+    SELECT -- as per synth Mint
+          parsed.address as address,
+          CAST(parsed.value as NUMERIC) as value,
+          transaction_hash,
+          block_number,
+          log_index,
+          "Mint" as event_type
+    FROM 
+    (SELECT * FROM `v2_all_non_deposited_events` 
+    UNION ALL
+    SELECT * FROM `v2_0_withdrawn_events` 
+    )
+    WHERE parsed.event = "Deposited" 
+    OR parsed.event = "DepositedANDCommitted" 
+    OR parsed.event = "Rewarded"
+    OR parsed.event = "SponsorshipDeposited"
   )
-  WHERE parsed.event = "Withdrawn" 
-  OR parsed.event = "CommittedDepositWithdrawn" 
-  OR parsed.event = "OpenDepositWithdrawn"
-  OR parsed.event = "SponsorshipANDFeesWithdrawn"
-
-  UNION ALL
-
-  SELECT -- as per synth Mint
-        parsed.address as address,
-        CAST(parsed.value as NUMERIC) as value,
-        transaction_hash,
-        block_number,
-        log_index,
-        "Mint" as event_type
-  FROM 
-  (SELECT * FROM `v2_all_non_deposited_events` 
-  UNION ALL
-  SELECT * FROM `v2_0_withdrawn_events` 
-  )
-  WHERE parsed.event = "Deposited" 
-  OR parsed.event = "DepositedANDCommitted" 
-  OR parsed.event = "Rewarded"
-  OR parsed.event = "SponsorshipDeposited"
-)
 WHERE value != 0 -- get rid of zero value transactions
 ORDER BY address, block_number, log_index ASC
 );
