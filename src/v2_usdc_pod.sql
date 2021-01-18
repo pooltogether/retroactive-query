@@ -136,7 +136,14 @@ CREATE TEMP TABLE pod_cutoff AS(
 );
 
 CREATE TABLE v2_usdc_pods AS(
-  SELECT  * FROM(
+  SELECT 
+    value * 1e12 as value, -- scaling to be equal to dai/sai
+    block_number,
+    log_index,
+    balance,
+    prev_balance,
+    delta_blocks
+   FROM(
       SELECT * 
       FROM `v2_pod_delta_balances` 
       UNION ALL
