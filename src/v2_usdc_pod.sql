@@ -142,7 +142,7 @@ CREATE TABLE v2_usdc_pods AS(
     block_number,
     log_index,
     balance,
-    prev_balance * 1e12,
+    prev_balance * 1e12 as prev_balance,
     delta_blocks
    FROM(
       SELECT * 
