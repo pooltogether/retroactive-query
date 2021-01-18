@@ -138,7 +138,7 @@ CREATE TABLE v2_dai_pods AS (
     block_number,
     log_index,
     balance,
-    prev_balance,
+    abs(prev_balance), -- to prevent rounding drift
     delta_blocks
    FROM(
       SELECT * 
