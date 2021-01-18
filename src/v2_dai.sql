@@ -86,7 +86,7 @@ switch (topics[ 0 ]) {
 
     //SponsorshipANDFeesWithdrawn 0x6a4d2bc0b4e5453e814890ffd34fde45f1820118a5e3e08c8273e6befd8cc050
     case '0x6a4d2bc0b4e5453e814890ffd34fde45f1820118a5e3e08c8273e6befd8cc050':
-    var parsedEvent = { 'name': 'SponsorshipANDFeesWithdrawn',
+    var parsedEvent = { 'name': 'SponsorshipAndFeesWithdrawn',
       'inputs': [{ 'type': 'address', 'name': 'sender', 'indexed': true }, {
         'type': 'uint256',
         'name': 'amount',
@@ -96,11 +96,12 @@ switch (topics[ 0 ]) {
       'type': 'event'
     };
     decoded = abi.decodeEvent(parsedEvent, data, topics, false);
-    return { address: decoded.sender, value: decoded.amount, event: 'SponsorshipANDFeesWithdrawn'};
+    return { address: decoded.sender, value: decoded.amount, event: 'SponsorshipAndFeesWithdrawn'};
+
 
     //DepositedANDCommitted 0xc3a2b1de03156df25decfda8ed3e5aaa02ad33dc5fdf3f13aa9e7f6a7a8ae100
     case '0xc3a2b1de03156df25decfda8ed3e5aaa02ad33dc5fdf3f13aa9e7f6a7a8ae100':
-    var parsedEvent = { 'name': 'DepositedANDCommitted',
+    var parsedEvent = { 'name': 'DepositedAndCommitted',
       'inputs': [{ 'type': 'address', 'name': 'sender', 'indexed': true }, {
         'type': 'uint256',
         'name': 'amount',
@@ -110,7 +111,7 @@ switch (topics[ 0 ]) {
       'type': 'event'
     };
     decoded = abi.decodeEvent(parsedEvent, data, topics, false);
-    return { address: decoded.sender, value: decoded.amount, event: 'DepositedANDCommitted'};
+    return { address: decoded.sender, value: decoded.amount, event: 'DepositedAndCommitted'};
 
     
     case '0x39d270b67baa0bff7a394d3427e52a85d706cae15e649754ec7b54f3c9deb3f0':
@@ -135,53 +136,6 @@ switch (topics[ 0 ]) {
 """ OPTIONS ( library="https://storage.googleapis.com/ethlab-183014.appspot.com/ethjs-abi.js" );
 
 
-CREATE TEMP FUNCTION
-  PARSE_POD_LOG(data STRING,
-    topics ARRAY<STRING>)
-  RETURNS STRUCT<`address` STRING,
-  `value` STRING,
-  `event` STRING>
-  LANGUAGE js AS """
-switch (topics[ 0 ]) {    
-    case '0x91f63202ac41673c1d492d91ee9bf7a27334ccbcf5bcfbeb5755c67a8d12a838':
-    var parsedEvent = { 'name': 'PendingDepositWithdrawn',
-      'inputs': [
-        { 'type': 'address', 'name': 'operator', 'indexed': true },
-        {'type': 'address', 'name': 'FROM','indexed': true },
-        {'type': 'uint256', 'name': 'collateral','indexed': false },
-        {'type': 'bytes', 'name': 'data','indexed': false },
-        {'type': 'bytes', 'name': 'operatorData','indexed': false }
-       
-       ],
-      'anonymous': false,
-      'type': 'event'
-    };
-    decoded = abi.decodeEvent(parsedEvent, data, topics, false);
-    return { address: decoded.FROM, value: decoded.collateral, event: 'PendingDepositWithdrawn'};
-
-    case '0x91f63202ac41673c1d492d91ee9bf7a27334ccbcf5bcfbeb5755c67a8d12a838':
-    var parsedEvent = { 'name': 'Deposited',
-      'inputs': [
-        { 'type': 'address', 'name': 'operator', 'indexed': true },
-        {'type': 'address', 'name': 'FROM','indexed': true },
-        {'type': 'uint256', 'name': 'collateral','indexed': false },
-        {'type': 'uint256', 'name': 'drawId','indexed': false },
-        {'type': 'bytes', 'name': 'data','indexed': false },
-        {'type': 'bytes', 'name': 'operatorData','indexed': false }
-       
-       ],
-      'anonymous': false,
-      'type': 'event'
-    };
-    decoded = abi.decodeEvent(parsedEvent, data, topics, false);
-    return { address: decoded.FROM, value: decoded.collateral, event: 'Deposited'};
-
-  default:
-    throw 'unexpected event decode';
-}
-""" OPTIONS ( library="https://storage.googleapis.com/ethlab-183014.appspot.com/ethjs-abi.js" );
- 
- 
  
  -- all v2 Withdrawn events including v2.1 -2702 results -- saved as v2_all_withdrawn_events
 
@@ -364,7 +318,7 @@ SELECT * FROM(
     WHERE parsed.event = "Withdrawn" 
     OR parsed.event = "CommittedDepositWithdrawn" 
     OR parsed.event = "OpenDepositWithdrawn"
-    OR parsed.event = "SponsorshipANDFeesWithdrawn"
+    OR parsed.event = "SponsorshipAndFeesWithdrawn"
 
     UNION ALL
 
@@ -381,7 +335,7 @@ SELECT * FROM(
     SELECT * FROM `v2_0_withdrawn_events` 
     )
     WHERE parsed.event = "Deposited" 
-    OR parsed.event = "DepositedANDCommitted" 
+    OR parsed.event = "DepositedAndCommitted" 
     OR parsed.event = "Rewarded"
     OR parsed.event = "SponsorshipDeposited"
   )
