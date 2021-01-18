@@ -133,6 +133,7 @@ CREATE TEMP TABLE pod_cutoff AS(
 );
 CREATE TABLE v2_dai_pods AS (  
   SELECT 
+    address,
     value * 1e18 as value, -- scaling to be equal to dai/sai
     block_number,
     log_index,
