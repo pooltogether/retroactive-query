@@ -41,16 +41,46 @@ CREATE TABLE lp_fraction_of_total AS(
 );
 
 -- formula query
+create table pool_rewards AS(
+    SELECT address,
+            10 * log10(1 + prev_balance * 0.0002) * (2/1+ exp(-10 * delta_blocks)) as POOL, -- formula
+            source
+    FROM(        
+        SELECT * FROM `all_versions_final_deltas`
+        WHERE (prev_balance > 0
+        AND delta_blocks > 0)
+    )
+    order by address, source, block_number, log_index
+);
 
-SELECT address,
-        10 * log10(1 + prev_balance * 0.0002) * (2/1+ exp(-10 * delta_blocks)) as POOL, -- formula
+-- table for historgram
+select *, 
+    case
+ WHEN POOL BETWEEN 0 AND 100 THEN "0-100"
+ WHEN POOL BETWEEN 100 AND 200 THEN "100-200"
+ WHEN POOL BETWEEN 200 AND 300 THEN "200-300"
+ WHEN POOL BETWEEN 300 AND 400 THEN "300-400"
+ WHEN POOL BETWEEN 400 AND 500 THEN "400-500"
+ WHEN POOL BETWEEN 500 AND 600 THEN "500-600"
+ WHEN POOL > 600 THEN ">600"
+ END AS amount
+ FROM(
+    SELECT
+        address,
+        10 * LOG10(1 + prev_balance * 0.0002) * (2/1+ EXP(-10 * delta_blocks)) AS POOL,
+        -- formula
         source
-FROM(        
-    SELECT * FROM `all_versions_final_deltas`
-    WHERE (prev_balance > 0
-    AND delta_blocks > 0)
-)
-order by address, source, block_number, log_index
+        FROM (
+        SELECT
+            *
+        FROM
+            `all_versions_final_deltas`
+        WHERE
+            prev_balance > 0
+            AND delta_blocks > 0
+        )
+        order by address
+);
 
 
 
