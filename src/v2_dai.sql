@@ -340,6 +340,7 @@ SELECT * FROM(
     OR parsed.event = "SponsorshipDeposited"
   )
 WHERE value != 0 -- get rid of zero value transactions
+AND block_number < @v2_cutoff_block_number
 ORDER BY address, block_number, log_index ASC
 );
 

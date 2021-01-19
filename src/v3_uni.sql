@@ -22,13 +22,15 @@ CREATE TEMP TABLE v3_deltas AS (
         0 - CAST(value AS NUMERIC) as value, 
         transaction_hash, block_number, log_index 
         FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
-        WHERE token_address = "0xa92a861fc11b99b24296af880011b47f9cafb5ab" 
+        WHERE token_address = "0xa92a861fc11b99b24296af880011b47f9cafb5ab"
+        AND block_number < @v3_cutoff_block_number 
         UNION ALL
         SELECT to_address as address,
         CAST(value AS NUMERIC) as value,
         transaction_hash, block_number, log_index 
         FROM `bigquery-public-data.crypto_ethereum.token_transfers`
-        WHERE token_address = "0xa92a861fc11b99b24296af880011b47f9cafb5ab" 
+        WHERE token_address = "0xa92a861fc11b99b24296af880011b47f9cafb5ab"
+        AND block_number < @v3_cutoff_block_number 
     )
 
     WHERE address != "0x0000000000000000000000000000000000000000"

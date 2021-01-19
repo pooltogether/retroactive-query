@@ -153,6 +153,7 @@ switch (topics[ 0 ]) {
         AND topics[SAFE_OFFSET(0)] IN (
           '0x7084f5476618d8e60b11ef0d7d3f06914655adb8793e28ff7f018d4c76d505d5'
       )
+      AND block_number < @v2_cutoff_block_number
  );
 
 -- all v2.1 Withdrawn events -284 results -- saved as v2_1_withdrawn_events
@@ -211,6 +212,7 @@ CREATE TEMP TABLE v2_1_withdrawn_events AS(
       num_tx>1
   )
   AND parsed.event = "Withdrawn"
+  AND block_number < @v2_cutoff_block_number
 );
 
 
@@ -246,6 +248,7 @@ WHERE transaction_hash NOT IN(SELECT transaction_hash FROM
       '0xc3a2b1de03156df25decfda8ed3e5aaa02ad33dc5fdf3f13aa9e7f6a7a8ae100',
       '0x39d270b67baa0bff7a394d3427e52a85d706cae15e649754ec7b54f3c9deb3f0'
       )
+      AND block_number < @v2_cutoff_block_number
  );
 
 --v2.0 deposits, v2.1 other events, 23451 results,, saved as v2_all_filtered_events
@@ -339,6 +342,7 @@ CREATE TEMP TABLE v2_all_synth_transfer_events AS(
     OR parsed.event = "SponsorshipDeposited"
   )
   WHERE value != 0 -- get rid of zero value transactions
+  AND block_number < @v2_cutoff_block_number
   ORDER BY address, block_number, log_index ASC
 );
 
