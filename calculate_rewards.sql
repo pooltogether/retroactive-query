@@ -3,8 +3,11 @@ BEGIN
 declare lp_total numeric; 
 
 create temp table scaled_down_deltas AS(
-SELECT address, delta_blocks,  prev_balance/1e10 as prev_balance,source FROM `psyched-ceiling-302219.retroactive_753178ea421b7f820aad4dd352316abbc2954883.all_versions_final_deltas`
-
+    SELECT 
+        address,
+        delta_blocks,
+        prev_balance/1e10 as prev_balance,source 
+        FROM `all_versions_final_deltas`
 );
 
 
@@ -43,12 +46,10 @@ set lp_total = (SELECT sum(total_lp_shares)FROM(
         )
         )
         GROUP BY address, source
-    ORDER BY address, source;
+    ORDER BY lp_shares_fraction, address, source;
 
 
     
-
-end;
 
 -- formula query
 create table pool_rewards AS(

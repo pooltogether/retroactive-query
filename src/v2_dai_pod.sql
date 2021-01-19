@@ -134,11 +134,11 @@ CREATE TEMP TABLE pod_cutoff AS(
 CREATE TABLE v2_dai_pods AS (  
   SELECT 
     address,
-    value * 1e24 as value, -- scaling to be equal to dai/sai
+    value * 1e16 as value, -- scaling to be equal to dai/sai
     block_number,
     log_index,
     balance,
-    abs(prev_balance) * 1e24 as prev_balance, 
+    abs(prev_balance) * 1e16 as prev_balance, 
     delta_blocks
    FROM(
       SELECT * 

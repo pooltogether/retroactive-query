@@ -70,7 +70,7 @@ CREATE TEMP FUNCTION
      create temp table pod_normalised_transfers AS (
      SELECT 
       address,
-      CAST(value AS numeric)*1e6 / CAST(mantissa AS numeric) as value, -- normalizing to 18 decimals
+      CAST(value AS numeric)/ CAST(mantissa AS numeric) as value, -- normalizing to 18 decimals
       transaction_hash,
       block_number,
       log_index
