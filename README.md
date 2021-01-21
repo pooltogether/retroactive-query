@@ -1,6 +1,6 @@
-# @uniswap/retroactive-query
+# @pooltogether/retroactive-query
 
-[![Run Queries](https://github.com/Uniswap/retroactive-query/workflows/Run%20Queries/badge.svg)](https://github.com/Uniswap/retroactive-query/actions?query=workflow%3A%22Run+Queries%22)
+[![Run Queries](https://github.com/pooltogether/retroactive-query/workflows/Run%20Queries/badge.svg)](https://github.com/pooltogether/retroactive-query/actions?query=workflow%3A%22Run+Queries%22)
 
 This repository contains queries that produce the tables of retroactive PT token distributions.
 
@@ -13,7 +13,13 @@ Data for this dataset is extracted to Google BigQuery using
 
 ## Specifications
 
-All queries have a cutoff timestamp of `2020-09-01 00:00:00+00 GMT`. Total distribution is aimed at `150_000_000` UNI.
+There are 3 versions of the PoolTogether protocol. The cutoff blocks are as follows:
+
+v1: fixed period of 36,000 blocks
+v2: block number 11,104,391
+v3: block number 11,656,283
+
+Total distribution is aimed at `` POOL.
 
 ### All users
 
@@ -44,10 +50,11 @@ You can reproduce the results of this query by forking this repository and addin
 1. Find your Project ID in the Google Cloud console [here](https://console.cloud.google.com/)
 1. Fork this repository
 1. Add the secret `GCP_PROJECT_ID` under Settings > Secrets containing your project ID from the GCP dashboard 
-1. Add the secret `GCP_SA_KEY` under Settings > Secrets containing the base64 encoded JSON key of a service account. This can be obtained by following [this] (https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts.keys)
+1. Add the secret `GCP_SA_KEY` under Settings > Secrets containing the base64 encoded JSON key of a service account. This can be obtained by following [this] (https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts.keys) 
 1. Go to the actions tab of your fork
-1. Run the workflow (roughly ~20 minutes to complete)
-1. Inspect the resulting tables
+1. Run the workflow (roughly ~10 minutes to complete)
+1. Inspect the resulting tables - all_earnings_hexadecimal is the final table used in the merkle distribution. 
+1. These results can be downloaded in JSON format and verified as to the merkle distribution [contract] (https://github.com/pooltogether/merkle-distributor)
 
 ### Determinism notes
 
@@ -63,4 +70,4 @@ for more information.
 
 ### Final results
 
-The blob containing all the proofs of the retroactive distribution can be found at [mrkl.uniswap.org](https://mrkl.uniswap.org).
+The blob containing all the proofs of the retroactive distribution can be found at 
