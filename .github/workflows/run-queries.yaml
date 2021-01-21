@@ -38,7 +38,7 @@ jobs:
           - file: "./src/02_v2_dai.sql"
           - file: "./src/03_v2_dai_pod.sql"
           - file: "./src/04_v2_sai.sql"
-          - file: "./src/05_usdc_pod.sql"
+          - file: "./src/05_v2_usdc_pod.sql"
           - file: "./src/06_v2_usdc.sql"
           - file: "./src/07_v3_dai.sql"
           - file: "./src/08_v3_uni.sql"
