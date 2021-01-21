@@ -34,18 +34,19 @@ jobs:
       max-parallel: 1
       matrix:
         schema:
-          - file: "./src/v1.sql"
-          - file: "./src/v2_dai.sql"
-          - file: "./src/v2_sai.sql"
-          - file: "./src/v2_usdc.sql"
-          - file: "./src/v2_usdc_pod.sql"
-          - file: "./src/v2_dai_pod.sql"
-          - file: "./src/v3_dai.sql"
-          - file: "./src/v3_uni.sql"
-          - file: "./src/v3_usdc.sql"
-          - file: "./src/all_versions.sql"
-          - file: "./src/calc_rewards_top_down.sql"
-          - file : "./src/10_all_earnings_hexadecimal.sql"
+          - file: "./src/01_v1.sql"
+          - file: "./src/02_v2_dai.sql"
+          - file: "./src/03_v2_dai_pod.sql"
+          - file: "./src/04_v2_sai.sql"
+          - file: "./src/05_usdc_pod.sql"
+          - file: "./src/06_v2_usdc.sql"
+          - file: "./src/07_v3_dai.sql"
+          - file: "./src/08_v3_uni.sql"
+          - file: "./src/09_v3_usdc.sql"
+          - file: "./src/10_all_versions.sql"
+          - file: "./src/11_calc_rewards_top_down.sql"
+          - file : "./src/12_all_earnings_hexadecimal.sql"
+          - file : "./src/13_sanity_checks.sql"
 
 
     steps:

@@ -16,7 +16,7 @@ create temp table scaled_down_deltas AS(
         delta_blocks,
         prev_balance/1e10 as prev_balance,
         source 
-        FROM `psyched-ceiling-302219.retroactive_9cbd3516e5f52c6d01e11c9ceffe6fc3e7b0c600.all_versions_final_deltas`
+        FROM `all_versions_final_deltas`
         where prev_balance > 0 AND delta_blocks > 0
 
 );
@@ -67,7 +67,7 @@ select address,
 
 set remaining_lp_tokens = total_tokens - total_floor_tokens;
 
-# total_granted per address (floor + lp_fraction of remainder)
+-- total_granted per address (floor + lp_fraction of remainder)
 select *,
         total_granted/total_tokens as percentage_granted
         FROM(
@@ -83,7 +83,7 @@ select *,
 ); 
 
 
-#now populate reason field -v1, v2, v3 etc.
+-- now populate reason field -v1, v2, v3 etc.
 create temp table reasons as(
     select address, STRING_AGG(source) as reasons 
     from(
@@ -93,7 +93,7 @@ create temp table reasons as(
     group by address
 );
 
-# combine rewards with reasons
+-- combine rewards with reasons
 create table all_earnings AS(
     select rewards.address,
             total_granted as earnings,
