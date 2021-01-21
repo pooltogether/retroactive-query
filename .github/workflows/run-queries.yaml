@@ -34,19 +34,19 @@ jobs:
       max-parallel: 1
       matrix:
         schema:
-          - file: "./src/01_uniswap_v1_pairs.sql"
-          - file: "./src/02_uniswap_v2_pairs.sql"
-          - file: "./src/03_uniswap_v2_syncs.sql"
-          - file: "./src/04_parsed_v1_logs.sql"
-          - file: "./src/05_uniswap_contracts.sql"
-          - file: "./src/06_user_query.sql"
-          - file: "./src/07_01_liquidity_provider_query_pt_1.sql"
-          - file: "./src/07_02_liquidity_provider_query_pt_2.sql"
-          - file: "./src/07_03_liquidity_provider_query_pt_3.sql"
-          - file: "./src/08_socks.sql"
-          - file: "./src/09_all_earnings.sql"
-          - file: "./src/10_all_earnings_hexadecimal.sql"
-          - file: "./src/11_sanity_checks.sql"
+          - file: "./src/v1.sql"
+          - file: "./src/v2_dai.sql"
+          - file: "./src/v2_sai.sql"
+          - file: "./src/v2_usdc.sql"
+          - file: "./src/v2_usdc_pod.sql"
+          - file: "./src/v2_dai_pod.sql"
+          - file: "./src/v3_dai.sql"
+          - file: "./src/v3_uni.sql"
+          - file: "./src/v3_usdc.sql"
+          - file: "./src/all_versions.sql"
+          - file: "./src/calc_rewards_top_down.sql"
+          - file : "./src/10_all_earnings_hexadecimal.sql"
+
 
     steps:
       - uses: actions/checkout@v2
@@ -63,10 +63,10 @@ jobs:
         run: |
           cat ${{ matrix.schema.file }} | \
           bq --location=US --dataset_id=${{ secrets.GCP_PROJECT_ID }}:retroactive_${{ github.sha }} query \
-          --parameter='cutoff_timestamp:TIMESTAMP:2020-09-01 00:00:00+00' \
-          --parameter='cutoff_block_number:INT64:10771925' \
-          --parameter='socks_user_reward:FLOAT64:100' \
+          --use_legacy_sql=false \
+          --parameter='v3_cutoff_block_number:INT64:11656283' \
+          --parameter='v2_cutoff_block_number:INT64:11104391' \
+          --parameter='v1_pool_period:INT64:36000' \
           --parameter='user_reward:FLOAT64:400' \
-          --parameter='total_reward:FLOAT64:150000000' \
-          --nouse_legacy_sql
+          --parameter='total_reward:FLOAT64:150000000' 
 

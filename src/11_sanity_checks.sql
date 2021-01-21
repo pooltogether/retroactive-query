@@ -1,3 +1,5 @@
+-- ensure no negative delta blocks or prev_balances
+
 BEGIN
     CREATE TABLE sanity_checks AS
     (
