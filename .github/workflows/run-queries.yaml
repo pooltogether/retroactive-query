@@ -68,6 +68,6 @@ jobs:
           --parameter='v3_cutoff_block_number:INT64:11656283' \
           --parameter='v2_cutoff_block_number:INT64:11104391' \
           --parameter='v1_pool_period:INT64:36000' \
-          --parameter='token_floor:NUMERIC:50' \
+          --parameter='token_floor:NUMERIC:20' \
           --parameter='total_reward:NUMERIC:2000000' 
 

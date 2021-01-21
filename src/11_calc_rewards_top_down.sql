@@ -3,7 +3,7 @@ BEGIN
 declare lp_total numeric;
 declare total_floor_tokens numeric;
 declare remaining_lp_tokens numeric;
-
+declare lp_share_total FLOAT64;
 
 
 create temp table scaled_down_deltas AS(
@@ -54,6 +54,7 @@ CREATE TEMP TABLE lp_fractions AS(
 );
 
 # give token_floor amount to everyone that has participated in any non-zero way across all versions
+
 set total_floor_tokens = (SELECT sum(token_floor) FROM(
 SELECT address,
         @token_floor as token_floor
@@ -63,21 +64,25 @@ SELECT address,
 
 set remaining_lp_tokens = @total_reward - total_floor_tokens;
 
--- total_granted per address (floor + lp_fraction of remainder)
--- SELECT *,
---         total_granted/total_tokens as percentage_granted
-        -- FROM(
-CREATE TEMP TABLE rewards AS(
-            SELECT *,
-                    @token_floor + lp_share as total_granted
-                    FROM(
-                        SELECT address,
-                            @token_floor,
-                            total_lp_shares_fraction * remaining_lp_tokens as lp_share
-                            FROM (SELECT * FROM `lp_fractions`)
-                        )
-); 
+set lp_share_total = (select 
+    SUM(lp_share) as share
+    FROM(
+        SELECT 
+            address,
+            LOG((1 + total_lp_shares_fraction * 10000),2) as lp_share
+            FROM (SELECT * FROM `lp_fractions`)
+    )
+);
 
+CREATE TEMP TABLE rewards AS(
+    SELECT *,
+            @token_floor + lp_share as total_granted
+            FROM(
+                SELECT address,
+                    IEEE_DIVIDE(LOG((1 + total_lp_shares_fraction * 10000),2) ,lp_share_total) * remaining_lp_tokens as lp_share
+                    FROM (SELECT * FROM `lp_fractions`)
+                )
+# ); 
 
 -- now populate reason field -v1, v2, v3 etc.
 CREATE TEMP TABLE reasons as(
