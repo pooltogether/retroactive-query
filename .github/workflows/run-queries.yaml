@@ -44,6 +44,8 @@ jobs:
           - file: "./src/v3_uni.sql"
           - file: "./src/v3_usdc.sql"
           - file: "./src/all_versions.sql"
+          - file: "./src/calc_rewards_top_down.sql"
+          - file : "./src/10_all_earnings_hexadecimal.sql"
 
 
     steps:
