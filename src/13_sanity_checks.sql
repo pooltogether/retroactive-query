@@ -1,7 +1,7 @@
 -- ensure no negative delta blocks or prev_balances
--- ensure no naughty list contracts in final 
--- ensure exact number of participants
--- ensure no one gets less than floor
+-- ensure no naughty list contracts in final DONE 
+-- ensure exact number of participants DONE
+-- ensure no one gets less than floor UPDATE FLOOR
 
 BEGIN
     CREATE TABLE sanity_checks AS
@@ -26,7 +26,7 @@ BEGIN
                 ELSE FALSE
                END)                                 AS passes
     UNION AL
-    SELECT "there are exactly 16816 unique addresses" AS test_case,
+    SELECT "there are exactly 16,816 unique addresses" AS test_case,
         CAST((SELECT COUNT(distinct address) from all_earnings) AS STRING) as test_value,
            (CASE
                 WHEN ((SELECT COUNT(distinct address) from user_query)) = 16816 THEN TRUE

@@ -1,14 +1,10 @@
 BEGIN 
 
 declare lp_total numeric;
-
-declare total_tokens numeric;
-declare token_floor numeric;
 declare total_floor_tokens numeric;
 declare remaining_lp_tokens numeric;
 
-set total_tokens = 2e6;
-set token_floor = 50;
+
 
 create temp table scaled_down_deltas AS(
     SELECT 
@@ -58,44 +54,44 @@ CREATE TEMP TABLE lp_fractions AS(
 );
 
 # give token_floor amount to everyone that has participated in any non-zero way across all versions
-set total_floor_tokens = (select sum(token_floor) from(
-select address,
-        token_floor as token_floor
+set total_floor_tokens = (SELECT sum(token_floor) FROM(
+SELECT address,
+        @token_floor as token_floor
         FROM (SELECT * FROM `lp_fractions`)
     )
 );
 
-set remaining_lp_tokens = total_tokens - total_floor_tokens;
+set remaining_lp_tokens = @total_reward - total_floor_tokens;
 
 -- total_granted per address (floor + lp_fraction of remainder)
-select *,
-        total_granted/total_tokens as percentage_granted
-        FROM(
-            select *,
-                    token_floor + lp_share as total_granted
+-- SELECT *,
+--         total_granted/total_tokens as percentage_granted
+        -- FROM(
+CREATE TEMP TABLE rewards AS(
+            SELECT *,
+                    @token_floor + lp_share as total_granted
                     FROM(
-                        select address,
-                            token_floor,
+                        SELECT address,
+                            @token_floor,
                             total_lp_shares_fraction * remaining_lp_tokens as lp_share
-                            from (select * from `lp_fractions`)
+                            FROM (SELECT * FROM `lp_fractions`)
                         )
-            order by total_granted desc
 ); 
 
 
 -- now populate reason field -v1, v2, v3 etc.
-create temp table reasons as(
-    select address, STRING_AGG(source) as reasons 
-    from(
-        select address, source 
-            from (select address, source, sum(prev_balance) from `scaled_down_deltas` group by address, source)
+CREATE TEMP TABLE reasons as(
+    SELECT address, STRING_AGG(source) as reasons 
+    FROM(
+        SELECT address, source 
+            FROM (SELECT address, source, sum(prev_balance) FROM `scaled_down_deltas` group by address, source)
     )
     group by address
 );
 
 -- combine rewards with reasons
-create table all_earnings AS(
-    select rewards.address,
+CREATE TABLE all_earnings AS(
+    SELECT rewards.address,
             total_granted as earnings,
             reasons.reasons 
             FROM `rewards`
