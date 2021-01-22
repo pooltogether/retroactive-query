@@ -127,7 +127,7 @@ CREATE TEMP TABLE reasons as(
 -- combine rewards with reasons
 CREATE TABLE all_earnings AS(
     SELECT rewards.address,
-            total_granted as earnings,
+            ROUND(total_granted,0) as earnings,
             reasons.reasons 
             FROM `rewards`
             INNER JOIN 

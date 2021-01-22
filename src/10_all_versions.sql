@@ -883,7 +883,7 @@ CREATE TABLE voted_at_least_once AS(
     SELECT * FROM `snapshot_participants_1`
     UNION DISTINCT
     SELECT * FROM `snapshot_participants_2`
-)
+);
 
 
 CREATE TABLE all_versions_final_deltas AS(
