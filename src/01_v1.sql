@@ -1,4 +1,3 @@
---BoughtTickets 0xbae340cbbad65e770c316b0667f457021a64c3d9bd20aa1361bf0f9ca3ef459e
 BEGIN
 
 CREATE TEMP FUNCTION
@@ -67,7 +66,6 @@ CREATE TEMP TABLE v1_p1_events AS(
 
 
 -- get Bought ticket events for Pool 2
-
 CREATE TEMP TABLE v1_p2_events AS(
   SELECT
         logs.block_timestamp AS block_timestamp,
@@ -86,8 +84,8 @@ CREATE TEMP TABLE v1_p2_events AS(
 );
 
 
+-- get Bought ticket events for Pool 3 
 CREATE TEMP TABLE v1_p3_events AS(
--- get Bought ticket events for Pool 3 - 260 results
   SELECT
         logs.block_timestamp AS block_timestamp,
         logs.block_number AS block_number,
@@ -106,8 +104,7 @@ CREATE TEMP TABLE v1_p3_events AS(
 
 
 
--- get Bought ticket events for Pool 4 -249 Results
-
+-- get Bought ticket events for Pool 4
 CREATE TEMP TABLE v1_p4_events AS(
   SELECT
         logs.block_timestamp AS block_timestamp,

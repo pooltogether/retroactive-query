@@ -1,5 +1,5 @@
 
--- calcualted balance and prev_balance FROM public dataset and saves as v3_deltas_1
+-- calcualted balance and prev_balance FROM public dataset
 BEGIN
 CREATE TEMP TABLE v3_deltas AS (
     SELECT * , coalesce(LAG(balance,1) OVER
@@ -38,8 +38,7 @@ CREATE TEMP TABLE v3_deltas AS (
     )
 );
 
---simulate total balance burn event for hard coded block if non-zero balance at this point, 3627 results
--- saved as v3_simulated_balance_burn
+--simulate total balance burn event for hard coded block if non-zero balance at cutoff
 CREATE TEMP TABLE v3_simulated_balance_burn AS(
     SELECT address,
         0 as value,

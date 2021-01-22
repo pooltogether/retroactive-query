@@ -1,9 +1,3 @@
-   --Pool Dai @ 0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958 topic0's
-  -- Deposited: 0x2da466a7b24304f47e87fa2e1e5a81b9831ce54fec19055ce277ca2f39ba42c4
-  -- CommittedDepositWithdrawn: 0x5bd2fe46fdbb7534e8b97cffa63f641b75d3485cba0cfb856f0703409cf65e70
-  -- OpenDepositWithdawn: 0x377533556d4ebd6be8b81e3573fd7e7bf70feb8737df314e8e7953cbb395f004
-  -- Withdawn: 0x7084f5476618d8e60b11ef0d7d3f06914655adb8793e28ff7f018d4c76d505d5
-
 BEGIN
 CREATE TEMP FUNCTION
   PARSE_V2_LOG(data STRING,
@@ -70,7 +64,7 @@ switch (topics[ 0 ]) {
     decoded = abi.decodeEvent(parsedEvent, data, topics, false);
     return { address: decoded.sender, value: decoded.amount, event: 'CommittedDepositWithdrawn'};
 
-//  SponsorshipDeposited 0x6dd4ea9218ce2f17ec77769fa65225b906e99dd3f597b7e087df3bdd8f7899dd
+    //  SponsorshipDeposited 0x6dd4ea9218ce2f17ec77769fa65225b906e99dd3f597b7e087df3bdd8f7899dd
     case '0x6dd4ea9218ce2f17ec77769fa65225b906e99dd3f597b7e087df3bdd8f7899dd':
     var parsedEvent = { 'name': 'SponsorshipDeposited',
       'inputs': [{ 'type': 'address', 'name': 'sender', 'indexed': true }, {
@@ -136,7 +130,7 @@ switch (topics[ 0 ]) {
  
  
  
- -- all v2 Withdrawn events including v2.1 -2702 results -- saved as v2_all_withdrawn_events
+ -- all v2 Withdrawn events including v2.1
 
  CREATE TEMP TABLE v2_all_withdrawn_events AS(
   SELECT
@@ -155,7 +149,7 @@ switch (topics[ 0 ]) {
       )
  );
 
--- all v2.1 Withdrawn events -284 results -- saved as v2_1_withdrawn_events
+-- all v2.1 Withdrawn events
 CREATE TEMP TABLE v2_1_withdrawn_events AS(
   SELECT * FROM( 
     SELECT
@@ -217,14 +211,14 @@ CREATE TEMP TABLE v2_1_withdrawn_events AS(
 
 --v2.0 Withdrawn events -2418 results --saved as v2_0_withdrawn_events
 CREATE TEMP TABLE v2_0_withdrawn_events AS(
-SELECT * FROM
-`v2_all_withdrawn_events`  
-WHERE transaction_hash NOT IN(SELECT transaction_hash FROM 
-`v2_1_withdrawn_events` )
+  SELECT * FROM
+  `v2_all_withdrawn_events`  
+  WHERE transaction_hash NOT IN(SELECT transaction_hash FROM 
+  `v2_1_withdrawn_events` )
 );  
 
 
---v2 all other events excluding Withdrawn --22158 results --saved as v2_all_non_deposited_events
+--v2 all other events excluding Withdrawn
  CREATE TEMP TABLE v2_all_non_deposited_events AS (
   SELECT
         logs.block_timestamp AS block_timestamp,
@@ -248,17 +242,16 @@ WHERE transaction_hash NOT IN(SELECT transaction_hash FROM
       )
  );
 
---v2.0 deposits, v2.1 other events, 23451 results,, saved as v2_all_filtered_events
+--v2.0 deposits, v2.1 other events
 CREATE TEMP TABLE v2_all_filtered_events AS(
   SELECT * FROM 
-  (SELECT * FROM `v2_all_non_deposited_events` 
-  UNION ALL
-  SELECT * FROM `v2_0_withdrawn_events` 
-  )
+    (SELECT * FROM `v2_all_non_deposited_events` 
+      UNION ALL
+    SELECT * FROM `v2_0_withdrawn_events` 
+    )
 );
 
 -- sum v2 totals -- this query is for checking balance vs etherscan
-
 -- SELECT
 --   parsed.event,
 --   SUM(CAST(parsed.value AS NUMERIC)/1e18) as totals
@@ -275,7 +268,6 @@ CREATE TEMP TABLE v2_all_filtered_events AS(
 
 
 -- get all "Transfer" events -- 35685 results
--- saved as v2_all_synth_transfer_events
 CREATE TEMP TABLE v2_all_synth_transfer_events AS(
   SELECT * FROM(
     SELECT
@@ -344,7 +336,6 @@ CREATE TEMP TABLE v2_all_synth_transfer_events AS(
 );
 
 -- now calculate rolling balances
--- saved as v2_delta_balances
 CREATE TEMP TABLE v2_delta_balances AS(
   SELECT * , coalesce(LAG(balance,1) OVER
   (PARTITION BY address ORDER BY block_number, log_index),0) as prev_balance,
@@ -367,8 +358,7 @@ CREATE TEMP TABLE v2_delta_balances AS(
   )
 );
 
--- simulate cutoff event if these balances are still positive
--- saved as v2_cutoff
+-- simulate cutoff event if these balances are still positive at the cutoff
 CREATE TEMP TABLE v2_cutoff AS(
   SELECT address,
         0 as value,

@@ -29,7 +29,7 @@ BEGIN
     SELECT "there are exactly 16,816 unique addresses" AS test_case,
         CAST((SELECT COUNT(distinct address) from all_earnings) AS STRING) as test_value,
            (CASE
-                WHEN ((SELECT COUNT(distinct address) from user_query)) = 16816 THEN TRUE
+                WHEN ((SELECT COUNT(distinct address) from all_earnings)) = 16816 THEN TRUE
                 ELSE FALSE
                END)                                 AS passes
     UNION ALL
