@@ -925,7 +925,7 @@ CREATE TABLE all_versions_final_deltas AS(
     FROM `v3_usdc`
     )
     WHERE address NOT IN  (
-        SELECT address naughty_list
+        SELECT address FROM `naughty_list`
     )
 );
 

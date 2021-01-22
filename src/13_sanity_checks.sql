@@ -25,7 +25,7 @@ BEGIN
                       FROM all_earnings) = 150000000 THEN TRUE
                 ELSE FALSE
                END)                                 AS passes
-    UNION AL
+    UNION ALL
     SELECT "there are exactly 16,816 unique addresses" AS test_case,
         CAST((SELECT COUNT(distinct address) from all_earnings) AS STRING) as test_value,
            (CASE
