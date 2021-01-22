@@ -2,7 +2,7 @@ BEGIN
 
 CREATE TABLE naughty_list (address STRING);
 INSERT INTO naughty_list(address) VALUES 
-    ("0xa38445311ccd04a54183cdd347e793f4d548df3f"),
+   -- ("0xa38445311ccd04a54183cdd347e793f4d548df3f"),
     ("0xe2dc9d379e7f2fd8cfb6872dc4652ae7f073817b"),
     ("0xa57d294c3a11fb542d524062ae4c5100e0e373ec"),
     ("0xc5fbf8d4a8b1b5a6acb81808af8ce564309b6df6"),
@@ -66,14 +66,14 @@ INSERT INTO naughty_list(address) VALUES
     ("0xbd87447f48ad729c5c4b8bcb503e1395f62e8b98"),
     ("0x9f4c5d8d9be360df36e67f52ae55c1b137b4d0c4"),
     ("0x6f5587e191c8b222f634c78111f97c4851663ba4"),
-    ("0xa5c3a513645a9a00cb561fed40438e9dfe0d6a69"),
+  --  ("0xa5c3a513645a9a00cb561fed40438e9dfe0d6a69"),
     ("0x0a09cd09b0107bb98a83f211704f036eca94b92e"),
     ("0x58bbb8d3c0c16b35c6d09a8306dd012b61911699"),
     ("0x14784c77300cdad40b0fded2e1298a62f99b4c21"),
     ("0xc4ac38dc5d4f58170d9a7183f7c368cbc97264db"),
     ("0xe507f2d7de97c783a60fef9f1c4a4dade2b0a989"),
     ("0x2a3f8ed783ff94fc9b4d87c6b7c6b770bbf063d3"),
-    ("0xec0286a4b478ecd600d3d96e398157b4825c5a38"),
+  --  ("0xec0286a4b478ecd600d3d96e398157b4825c5a38"),
     ("0x555ab21f310d73459d76682e119693a3715d97bc"),
     ("0x5ff0f990137ed250c84c492a896cb3f980d0f6b9"),
     ("0xf5276a7166cfda0d68b257e27c7c8bb2e5852e91"),
@@ -88,8 +88,8 @@ INSERT INTO naughty_list(address) VALUES
     ("0xc7cbb97f76046ec031202f2da19f9b16b7f18d4a"),
     ("0x7a3d9330ca9b0d0a1e9d0cc223ce786ce7fa4813"),
     ("0xaa1fdb5d1fd7d28d216fdfeb3475ccac538c61fa"),
-    ("0x6ff7639052b97965875f51aded19bce0eadb1214"),
-    ("0x5881541e79f5d9d5d72c87e8ea6f681cab289b12");
+    ("0x6ff7639052b97965875f51aded19bce0eadb1214");
+    --("0x5881541e79f5d9d5d72c87e8ea6f681cab289b12");
 
 CREATE TABLE snapshot_participants_1 (address STRING);
 INSERT INTO snapshot_participants_1(address) VALUES
@@ -872,7 +872,7 @@ INSERT INTO snapshot_participants_2(address) VALUES
     ("0x9fc34aa46bd4cc5c452d3e8150d27c48fba82ebc"),
     ("0x77dc8a9140438c0e88b6539361441c44e4acc6ee"),
     ("0x5827e597438d778b23ef3a66ae504ab1dcb93af3"),
-    ("0xe507f2d7de97c783a60fef9f1c4a4dade2b0a989"),
+   -- ("0xe507f2d7de97c783a60fef9f1c4a4dade2b0a989"),
     ("0x27fcf06dcffddb6ec5f62d466987e863ec6ae6a0"),
     ("0xdaa069cd9912efe13b36f732612a9610d607bcdd"),
     ("0xd895228707924e85ce3a1da5b0a9ad64427a492c"),
