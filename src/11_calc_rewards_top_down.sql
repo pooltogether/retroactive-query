@@ -4,7 +4,7 @@ declare lp_total numeric;
 declare total_floor_tokens numeric;
 declare remaining_lp_tokens numeric;
 declare lp_share_total FLOAT64;
-
+declare number_of_snapshot_voters numeric;
 
 create temp table scaled_down_deltas AS(
     SELECT 
@@ -74,24 +74,54 @@ set lp_share_total = (select
     )
 );
 
-CREATE TEMP TABLE rewards AS(
-    SELECT *,
-            @token_floor + lp_share as total_granted
-            FROM(
-                SELECT address,
-                    IEEE_DIVIDE(LOG((1 + total_lp_shares_fraction * 10000),2) ,lp_share_total) * remaining_lp_tokens as lp_share
-                    FROM (SELECT * FROM `lp_fractions`)
-                )
-# ); 
 
--- now populate reason field -v1, v2, v3 etc.
+-- now calculate awards for snapshot voting
+
+set number_of_snapshot_voters = (SELECT COUNT(address) FROM `voted_at_least_once`);
+
+CREATE TEMP TABLE snapshot_rewards AS(
+    SELECT address,
+    @total_reward_snapshot/number_of_snapshot_voters as snapshot_reward,
+    "snapshot" as source
+    FROM `voted_at_least_once`
+) 
+
+-- calc rewards using LP weighted formala
+CREATE TEMP TABLE rewards AS(
+    SELECT address,
+        @token_floor + lp_and_snapshot as total_granted
+        FROM(
+            SELECT address,
+                    SUM(reward) as lp_and_snapshot
+                    FROM(
+                        SELECT *
+                            FROM(
+                                SELECT address,
+                                    IEEE_DIVIDE(LOG((1 + total_lp_shares_fraction * 10000),2) ,lp_share_total) * remaining_lp_tokens as  reward
+                                    FROM (SELECT * FROM `lp_fractions`)
+
+                                    UNION ALL
+                                    SELECT 
+                                        address,
+                                        snapshot_reward as reward
+                                        FROM `snapshot_rewards`
+                                )
+                    )
+                    GROUP BY address
+        )
+); 
+
+-- now populate reason field -v1, v2, v3, snapshot etc.
 CREATE TEMP TABLE reasons as(
     SELECT address, STRING_AGG(source) as reasons 
     FROM(
         SELECT address, source 
             FROM (SELECT address, source, sum(prev_balance) FROM `scaled_down_deltas` group by address, source)
+        UNION ALL
+        SELECT address, source 
+            FROM (SELECT address, source from `snapshot_rewards`)    
     )
-    group by address
+    GROUP BY address
 );
 
 -- combine rewards with reasons
