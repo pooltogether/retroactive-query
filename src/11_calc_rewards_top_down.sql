@@ -84,7 +84,7 @@ CREATE TEMP TABLE snapshot_rewards AS(
     @total_reward_snapshot/number_of_snapshot_voters as snapshot_reward,
     "snapshot" as source
     FROM `voted_at_least_once`
-) 
+);
 
 -- calc rewards using LP weighted formala
 CREATE TEMP TABLE rewards AS(
