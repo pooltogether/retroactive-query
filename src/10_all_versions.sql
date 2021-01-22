@@ -71,7 +71,7 @@ INSERT INTO naughty_list(address) VALUES
     ("0x58bbb8d3c0c16b35c6d09a8306dd012b61911699"),
     ("0x14784c77300cdad40b0fded2e1298a62f99b4c21"),
     ("0xc4ac38dc5d4f58170d9a7183f7c368cbc97264db"),
-    ("0xe507f2d7de97c783a60fef9f1c4a4dade2b0a989"),
+  --  ("0xe507f2d7de97c783a60fef9f1c4a4dade2b0a989"),
     ("0x2a3f8ed783ff94fc9b4d87c6b7c6b770bbf063d3"),
   --  ("0xec0286a4b478ecd600d3d96e398157b4825c5a38"),
     ("0x555ab21f310d73459d76682e119693a3715d97bc"),
