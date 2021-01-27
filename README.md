@@ -15,33 +15,25 @@ Data for this dataset is extracted to Google BigQuery using
 
 There are 3 versions of the PoolTogether protocol. The cutoff blocks are as follows:
 
-v1: fixed period of 36,000 blocks
-v2: block number 11,104,391
-v3: block number 11,656,283
+v1: fixed period of 43,200 blocks (1 week - v1 pools were ephemeral)
+v2 and v3: block number 11,656,283
 
-Total distribution is aimed at `` POOL.
+Total distribution is aimed at `1,500,000` POOL.
 
 ### All users
 
-400 UNI goes to:
+20 UNI goes to:
 
-- any account that directly `call`s a Uniswap pair or a Uniswap router contract
-- any address that transfers any liquidity provider tokens or pair tokens to a Uniswap pair or a Uniswap router contract
-- any address that holds liquidity provider tokens for a non-zero number of seconds
+- any account that directly withdrew or deposited into any version of the protocol, including the v2 pods
 
 ### Liquidity providers
 
-- all liquidity is weighted by ETH value of liquidity / total ETH value
-- fixed reward rate per second to all LPs pro-rata
-- total rewards to liquidity providers is `150_000_000` - amount to users
+- all liquidity is weighted by the time (measured in blocks) multiplied by the amount expressed as a percentage of total liquidity to give a `total_lp_shares_fraction` per address
+- The additional rewarded tokens is then calculated as:
+ `LOG2(1 + total_lp_shares_fraction * 10000)/lp_share_total) * remaining_lp_tokens` where `remaining_lp_tokens` is the number of tokens after the base reward of 20 POOL for each address has been subtracted from the total distribution.  
+- This log influenced distribution allows for a distribution that is reduced for large providers and enhanced for smaller holders
 
-### SOCKS users
 
-1000 UNI goes to:
-
-- every address that burns any SOCKS
-- every address that holds at least 1 SOCKS token
- 
 ## Reproduction
 
 You can reproduce the results of this query by forking this repository and adding your own secrets to run in your own GCP account.
@@ -70,5 +62,5 @@ for more information.
 
 ### Final results
 
-The blob containing all the proofs of the retroactive distribution can be found at 
+The blob containing all the proofs of the retroactive distribution can be found at [https://https://objective-jang-89749c.netlify.app/.netlify/functions/all] (https://https://objective-jang-89749c.netlify.app/.netlify/functions/all)
 
