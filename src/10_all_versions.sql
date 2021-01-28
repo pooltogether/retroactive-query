@@ -88,8 +88,9 @@ INSERT INTO naughty_list(address) VALUES
     ("0xc7cbb97f76046ec031202f2da19f9b16b7f18d4a"),
     ("0x7a3d9330ca9b0d0a1e9d0cc223ce786ce7fa4813"),
     ("0xaa1fdb5d1fd7d28d216fdfeb3475ccac538c61fa"),
-    ("0x6ff7639052b97965875f51aded19bce0eadb1214");
-    ("0x5881541e79f5d9d5d72c87e8ea6f681cab289b12");
+    ("0x6ff7639052b97965875f51aded19bce0eadb1214"),
+    ("0x5881541e79f5d9d5d72c87e8ea6f681cab289b12"),
+    ("0xb3152182472ba2e46b11c75440a72d087f0750b6");
 
 CREATE TABLE snapshot_participants_1 (address STRING);
 INSERT INTO snapshot_participants_1(address) VALUES
