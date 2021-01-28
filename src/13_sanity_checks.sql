@@ -26,16 +26,16 @@ BEGIN
                 ELSE FALSE
                END)                                 AS passes
     UNION ALL
-    SELECT "there are exactly 16,816 unique addresses" AS test_case,
+    SELECT "there are exactly 16,754 unique addresses" AS test_case,
         CAST((SELECT COUNT(distinct address) from all_earnings) AS STRING) as test_value,
            (CASE
-                WHEN ((SELECT COUNT(distinct address) from all_earnings)) = 16816 THEN TRUE
+                WHEN ((SELECT COUNT(distinct address) from all_earnings)) = 16754 THEN TRUE
                 ELSE FALSE
                END)                                 AS passes
     UNION ALL
     SELECT "no one gets less than the user_reward in POOL" AS test_case,
             CAST((SELECT MIN(earnings) FROM all_earnings) AS STRING) as test_value,
-            (SELECT (MIN(earnings) = @user_reward) FROM all_earnings)
+            (SELECT (MIN(earnings) = @token_floor) FROM all_earnings)
                                                     AS passes
     UNION ALL
     SELECT "there are no naughty list contracts in the rewards" AS test_case,
@@ -47,4 +47,6 @@ BEGIN
                 ELSE FALSE
                END)                                 AS passes
                                                     );
+
+
 END;

@@ -18,7 +18,7 @@ CREATE TEMP TABLE v3_deltas AS (
             as balance
 
     FROM(
-        SELECT FROM_address as address,
+        SELECT from_address as address,
         0 - CAST(value AS NUMERIC) as value, 
         transaction_hash, block_number, log_index 
         FROM `bigquery-public-data.crypto_ethereum.token_transfers` 

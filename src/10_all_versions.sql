@@ -2,7 +2,7 @@ BEGIN
 
 CREATE TABLE naughty_list (address STRING);
 INSERT INTO naughty_list(address) VALUES 
-    ("0xa38445311ccd04a54183cdd347e793f4d548df3f"),
+   -- ("0xa38445311ccd04a54183cdd347e793f4d548df3f"),
     ("0xe2dc9d379e7f2fd8cfb6872dc4652ae7f073817b"),
     ("0xa57d294c3a11fb542d524062ae4c5100e0e373ec"),
     ("0xc5fbf8d4a8b1b5a6acb81808af8ce564309b6df6"),
@@ -880,12 +880,6 @@ INSERT INTO snapshot_participants_2(address) VALUES
     ("0x1bf7f23930b60afc0a0f85d77bf9cd8eafc2325d"),
     ("0x3594753c9132164a21eba19a197c7673f277245f");
 
-CREATE TABLE voted_at_least_once AS(
-    SELECT * FROM `snapshot_participants_1`
-    UNION DISTINCT
-    SELECT * FROM `snapshot_participants_2`
-);
-
 
 CREATE TABLE all_versions_final_deltas AS(
     SELECT * FROM(
@@ -926,8 +920,16 @@ CREATE TABLE all_versions_final_deltas AS(
     FROM `v3_usdc`
     )
     WHERE address NOT IN  (
-        SELECT address FROM `naughty_list`
+        SELECT address FROM `naughty_list` -- filter out naughty list
     )
+);
+
+CREATE TABLE voted_at_least_once AS(
+    SELECT * FROM(
+    SELECT * FROM `snapshot_participants_1`
+    UNION DISTINCT
+    SELECT * FROM `snapshot_participants_2`)
+    WHERE address IN (SELECT address FROM `all_versions_final_deltas`) -- make sure snapshot address has participated in protocol
 );
 
 END;

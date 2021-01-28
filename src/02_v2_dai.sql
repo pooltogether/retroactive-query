@@ -272,14 +272,14 @@ CREATE TEMP TABLE v2_all_filtered_events AS(
 CREATE TEMP TABLE v2_all_synth_transfer_events AS(
 SELECT * FROM(
     SELECT
-        FROM_address as address,
+        from_address as address,
         0 - CAST(value AS NUMERIC) as value,
         transaction_hash, block_number, log_index,
         "Transfer" as event_type   
     FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
     WHERE token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
     AND  to_address != "0x0000000000000000000000000000000000000000"
-    AND FROM_address != "0x0000000000000000000000000000000000000000"
+    AND from_address != "0x0000000000000000000000000000000000000000"
 
 
     UNION ALL
@@ -292,7 +292,7 @@ SELECT * FROM(
     FROM `bigquery-public-data.crypto_ethereum.token_transfers` 
     WHERE token_address = "0x49d716dfe60b37379010a75329ae09428f17118d"
     AND  to_address != "0x0000000000000000000000000000000000000000"
-    AND FROM_address != "0x0000000000000000000000000000000000000000"
+    AND from_address != "0x0000000000000000000000000000000000000000"
 
     UNION ALL
 
