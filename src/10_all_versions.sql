@@ -2,7 +2,7 @@ BEGIN
 
 CREATE TABLE naughty_list (address STRING);
 INSERT INTO naughty_list(address) VALUES 
-   -- ("0xa38445311ccd04a54183cdd347e793f4d548df3f"),
+    ("0xa38445311ccd04a54183cdd347e793f4d548df3f"),
     ("0xe2dc9d379e7f2fd8cfb6872dc4652ae7f073817b"),
     ("0xa57d294c3a11fb542d524062ae4c5100e0e373ec"),
     ("0xc5fbf8d4a8b1b5a6acb81808af8ce564309b6df6"),
