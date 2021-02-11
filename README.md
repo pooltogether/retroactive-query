@@ -40,9 +40,10 @@ You can reproduce the results of this query by forking this repository and addin
 
 1. Create a Google Cloud project [here](https://cloud.google.com/) 
 1. Find your Project ID in the Google Cloud console [here](https://console.cloud.google.com/)
-1. Fork this repository
-1. Add the secret `GCP_PROJECT_ID` under Settings > Secrets containing your project ID from the GCP dashboard 
-1. Add the secret `GCP_SA_KEY` under Settings > Secrets containing the base64 encoded JSON key of a service account. This can be obtained by following [this] (https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts.keys) 
+1. Create a Service Account in GCP and download the credentials JSON file.  See [here](https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts.keys)
+1. Fork this repository on Github
+1. Add the Github project secret `GCP_PROJECT_ID`. The value should be your GCP Project ID from earlier.
+1. Add the Github project secret `GCP_SA_KEY`.  The value should be the content of the GCP Service Account JSON credential file.
 1. Go to the actions tab of your fork
 1. Run the workflow (roughly ~12 minutes to complete)
 1. Inspect the resulting tables - all_earnings_hexadecimal is the final table used in the merkle distribution. 
