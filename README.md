@@ -47,7 +47,9 @@ You can reproduce the results of this query by forking this repository and addin
 1. Go to the actions tab of your fork
 1. Run the workflow (roughly ~12 minutes to complete)
 1. Inspect the resulting tables - all_earnings_hexadecimal is the final table used in the merkle distribution. 
-1. These results can be downloaded in JSON format and verified as to the merkle distribution [contract] (https://github.com/pooltogether/merkle-distributor)
+1. Create a query that selects all rows from the `all_earnings_hexadecimal` table and orders by address ascending.
+1. Export the query result as a JSON file.
+1. You can now verify that the file matches the merkle distribution in the [project] (https://github.com/pooltogether/merkle-distributor)
 
 ### Determinism notes
 
