@@ -1,8 +1,13 @@
 name: Run Queries
 
 on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   # manual run
   workflow_dispatch:
+  
 
 jobs:
   create-dataset:
@@ -20,6 +25,9 @@ jobs:
 
       - name:
         run: |
+          bq  --location=US show \
+              --dataset \
+              ${{ secrets.GCP_PROJECT_ID }}:retroactive_${{ github.sha }} || \
           bq --location=US mk \
           --dataset \
           --default_table_expiration 604800 \
