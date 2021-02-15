@@ -26,10 +26,10 @@ BEGIN
                 ELSE FALSE
                END)                                 AS passes
     UNION ALL
-    SELECT "there are exactly 16,754 unique addresses" AS test_case,
+    SELECT "there are exactly 17,072 unique addresses" AS test_case,
         CAST((SELECT COUNT(distinct address) from all_earnings) AS STRING) as test_value,
            (CASE
-                WHEN ((SELECT COUNT(distinct address) from all_earnings)) = 16754 THEN TRUE
+                WHEN ((SELECT COUNT(distinct address) from all_earnings)) = 17072 THEN TRUE
                 ELSE FALSE
                END)                                 AS passes
     UNION ALL
@@ -43,7 +43,7 @@ BEGIN
               WHERE address NOT IN (SELECT DISTINCT address FROM naughty_list)) AS STRING) as test_value,
            (CASE
                 WHEN (SELECT COUNT(*) from all_earnings
-              WHERE address NOT IN (SELECT DISTINCT address FROM naughty_list)) = 0 THEN TRUE
+              WHERE address IN (SELECT DISTINCT address FROM naughty_list)) = 0 THEN TRUE
                 ELSE FALSE
                END)                                 AS passes
                                                     );
