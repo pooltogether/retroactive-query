@@ -1,7 +1,7 @@
 BEGIN 
-
+-- Parse Withdrawn events - 1e6 base
 CREATE TEMP FUNCTION
-  PARSE_POD_LOG(data STRING,
+  PARSE_POD_WITHDRAWN_LOG(data STRING,
     topics ARRAY<STRING>)
   RETURNS STRUCT<`from_address` STRING,
   `operator` STRING,
@@ -30,6 +30,7 @@ CREATE TEMP FUNCTION
 }
 """ OPTIONS ( library="https://storage.googleapis.com/ethlab-183014.appspot.com/ethjs-abi.js" );
 
+--parse PendingDepositWithdrawn 
 CREATE TEMP FUNCTION
   PARSE_POD_PENDING_DEPOSIT_WITHDRAWN_LOG(data STRING,
     topics ARRAY<STRING>)
@@ -106,7 +107,7 @@ create temp table pod_deposits as(
 );
 
 
--- get mint Transfers e12 values
+-- get mint Transfers e12 values (1e6 * 1e6 exchange scale)
 create temp table pod_transfer_mints as(
     SELECT to_address as address,
             (CAST(value AS NUMERIC) * 1e12) as value,  -- scaling to 1e24
@@ -138,7 +139,7 @@ create temp table all_pod_mints AS(
 );
 
 
--- get transfers and burns from Public Transfer dataset 1e12 scale
+-- get transfers and burns from Public Transfer dataset 1e12 scale -  multiply by 1e12 to get to 1e24 base
 create temp table pod_transfers as (
         SELECT * 
         FROM(
@@ -220,7 +221,7 @@ create temp table all_events_non_zero_block_lengths as(
 
 
 -- find corresponding exchange rate (calculated FROM collateral and mantissa)
--- this has the effect of /1e10 so as to prevent rounding to zero precision errors 
+-- this has the effect of  dividing by 1e10 so as to prevent rounding to zero precision errors 
 create temp table pod_normalised_transfers AS (
   SELECT 
   address,
@@ -231,7 +232,7 @@ create temp table pod_normalised_transfers AS (
   FROM( 
     SELECT *,      
     CASE
-        WHEN block_number < 10027387 THEN "9993210636.44775776713679" 
+        WHEN block_number < 10027387 THEN                    "9993210636.44775776713679" 
         WHEN block_number BETWEEN 10027387 AND 10040222 THEN "9989825252.45810425296122"
         WHEN block_number BETWEEN 10040222 AND 10065995 THEN "9987079469.32873941046141"
         WHEN block_number BETWEEN 10065995 AND 10117398 THEN "9982194529.43352911059711"
@@ -241,7 +242,7 @@ create temp table pod_normalised_transfers AS (
         WHEN block_number BETWEEN 10375289 AND 10414160 THEN "9956459821.87227020679637"
         WHEN block_number BETWEEN 10414160 AND 10465862 THEN "9923314114.09899697714436"
         WHEN block_number BETWEEN 10465862 AND 10907589 THEN "9901199420.45004674110412"
-        WHEN block_number > 10907589 THEN "9894377931.94672047865689"
+        WHEN block_number > 10907589 THEN                    "9894377931.94672047865689"
     END AS mantissa
   FROM
   `all_events_non_zero_block_lengths` 
@@ -292,7 +293,7 @@ CREATE TEMP TABLE pod_cutoff AS(
   ORDER BY address
 );
 
--- union delta and cutoffs together and get those addresses with more than 2 entries
+-- union delta and cutoffs together
 create temp table pod_deltas_and_cutoffs as(
      select *,
     -- "delta" as source
@@ -322,26 +323,6 @@ create table v2_usdc_pods AS(
     )
     order by address, block_number,log_index
 );
-
-
--- scaling
--- Transfer events are 1e24, Deposit and PendingDepositWithdrawn are 1e6, Mantissa Normalisation 1e14
-
--- find unique addresses and see how many were missing from the original v2_dai_pod merkle claim set - should just get lp share
--- create table v2_usdc_pod_missing_only as(
---     select distinct address from `final_pod_deltas_and_cutoffs`
---     where address not in (select address from `future-system-305719.retroactive_e1edc1d67a341c9c865c89b162ece9fa63330ca4.v2_usdc_pods`)
---     order by address
--- );
-
--- -- find unique addresses and see how many were missing from the original all_earnings merkle claim set - should get floor plus lp share
--- create table v2_usdc_pod_received_no_reward as(
---     select distinct address from `final_pod_deltas_and_cutoffs`
---     where address not in (select address from `future-system-305719.retroactive_e1edc1d67a341c9c865c89b162ece9fa63330ca4.all_earnings_hexadecimal`)
---     order by address
--- );
-
-
 
 END;
 

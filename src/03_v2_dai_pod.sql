@@ -1,7 +1,7 @@
 BEGIN 
 
 CREATE TEMP FUNCTION
-  PARSE_POD_LOG(data STRING,
+  PARSE_POD_WITHDRAWN_LOG(data STRING,
     topics ARRAY<STRING>)
   RETURNS STRUCT<`from_address` STRING,
   `operator` STRING,
@@ -91,7 +91,7 @@ create temp table pod_deposits as(
           logs.block_number AS block_number,
           logs.transaction_hash AS transaction_hash,
           logs.log_index AS log_index,
-          PARSE_POD_LOG(logs.DATA,
+          PARSE_POD_WITHDRAWN_LOG(logs.DATA,
             logs.topics) AS parsed,
             "Deposited" as origin
         FROM
@@ -119,7 +119,7 @@ create temp table pod_transfer_mints as(
             and block_number < 11656283
 );
 
--- combine mint transfers and deposits together
+-- combine mint transfers and deposits together at 1e24 scale
 create temp table all_pod_mints AS(
   select * from(
     select * from `pod_transfer_mints`
@@ -136,12 +136,6 @@ create temp table all_pod_mints AS(
   order by address, block_number, log_index
 );
 
-
-
--- find if there is double accounting - 0 results - exluding the address in "group by" does result in 14 results but this is allowed
--- select * from `all_pod_mints` where transaction_hash in(
---   select transaction_hash from `all_pod_mints` group by transaction_hash, address having count(*) >1
--- ) order by transaction_hash;
 
 -- get transfers and burns from Public Transfer dataset 1e24 scale
 create temp table pod_transfers as (
@@ -185,7 +179,7 @@ select
   from( 
     select 
       address,
-      value, --1e6 to account for difference in base (Dai Transfer 1e18 vs POD event 1e24)
+      value,
       transaction_hash,
       block_number,
       log_index,
@@ -228,29 +222,29 @@ create temp table all_events_non_zero_block_lengths as(
 
 
 # -- find corresponding exchange rate (calculated FROM collateral and mantissa)
-     create temp table pod_normalised_transfers AS (
-     SELECT 
-      address,
-      CAST(value AS numeric)/CAST(mantissa AS numeric) as value,
-      transaction_hash,
-      block_number,
-      log_index
-      FROM( 
-        SELECT *,      
-        CASE
-            WHEN block_number < 10252642 THEN                    "9977938541.32195951469771" 
-            WHEN block_number BETWEEN 10252642 AND 10478731 THEN "9955884834.18636972538758"
-            WHEN block_number BETWEEN 10478732 AND 10750965 THEN "9882232135.54896415232677"
-            WHEN block_number BETWEEN 10750966 AND 10887958 THEN "9788290979.19259472712343"
-            WHEN block_number BETWEEN 10887959 AND 11068779 THEN "9635628116.84570071670400"
-            WHEN block_number BETWEEN 11068780 AND 11114344 THEN "9519540108.27867951025026"
-            WHEN block_number BETWEEN 11114344 AND 11205541 THEN "9405519391.99390322860274"
-            WHEN block_number > 11205541 THEN                    "9341445816.45248069581929"
-        END AS mantissa
-      FROM
-      `all_events_non_zero_block_lengths` 
-      )
-     );
+create temp table pod_normalised_transfers AS (
+  SELECT 
+  address,
+  CAST(value AS numeric)/CAST(mantissa AS numeric) as value,
+  transaction_hash,
+  block_number,
+  log_index
+  FROM( 
+    SELECT *,      
+    CASE
+        WHEN block_number < 10252642 THEN                    "9977938541.32195951469771" 
+        WHEN block_number BETWEEN 10252642 AND 10478731 THEN "9955884834.18636972538758"
+        WHEN block_number BETWEEN 10478732 AND 10750965 THEN "9882232135.54896415232677"
+        WHEN block_number BETWEEN 10750966 AND 10887958 THEN "9788290979.19259472712343"
+        WHEN block_number BETWEEN 10887959 AND 11068779 THEN "9635628116.84570071670400"
+        WHEN block_number BETWEEN 11068780 AND 11114344 THEN "9519540108.27867951025026"
+        WHEN block_number BETWEEN 11114344 AND 11205541 THEN "9405519391.99390322860274"
+        WHEN block_number > 11205541 THEN                    "9341445816.45248069581929"
+    END AS mantissa
+  FROM
+  `all_events_non_zero_block_lengths` 
+  )
+);
 
 
 # -- find rolling deltas on normalised dataset
@@ -265,8 +259,8 @@ create temp table all_events_non_zero_block_lengths as(
     SELECT  address,
       value,
       block_number,
-       log_index,
-       SUM(value) OVER
+      log_index,
+      SUM(value) OVER
            (PARTITION BY address ORDER BY block_number, log_index ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) 
            as balance
 
@@ -325,22 +319,6 @@ create table v2_dai_pods AS(
     )
     order by address, block_number,log_index
 );
-
--- find unique addresses and see how many were missing from the original v2_dai_pod merkle claim set - should just get lp share
--- create table v2_dai_pod_missing_only as(
---     select distinct address from `final_pod_deltas_and_cutoffs`
---     where address not in (select address from `future-system-305719.retroactive_e1edc1d67a341c9c865c89b162ece9fa63330ca4.v2_dai_pods`)
---     order by address
--- );
-
--- -- find unique addresses and see how many were missing from the original all_earnings merkle claim set - should get floor plus lp share
--- create table v2_dai_pod_received_no_reward as(
---     select distinct address from `final_pod_deltas_and_cutoffs`
---     where address not in (select address from `future-system-305719.retroactive_e1edc1d67a341c9c865c89b162ece9fa63330ca4.all_earnings_hexadecimal`)
---     order by address
--- );
-
-
 
 END;
 
